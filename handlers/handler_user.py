@@ -89,7 +89,7 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
 
 
 # >>
-@router.callback_query(F.data.startswith('order_forward_'))
+@router.callback_query(F.data.startswith('user_order_forward_'))
 async def process_forward(callback: CallbackQuery, state: FSMContext):
     """
     Пагинация вперед
@@ -131,7 +131,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
 
 
 # <<
-@router.callback_query(F.data.startswith('order_back_'))
+@router.callback_query(F.data.startswith('user_order_back_'))
 async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
     """
     Пагинация назад

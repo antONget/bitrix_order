@@ -66,9 +66,9 @@ def keyboards_order_item(list_orders: list, block: int, status_order: str):
             text=text,
             callback_data=button))
     button_back = InlineKeyboardButton(text='<<',
-                                       callback_data=f'order_back_{str(block)}')
+                                       callback_data=f'user_order_back_{str(block)}')
     button_next = InlineKeyboardButton(text='>>',
-                                       callback_data=f'order_forward_{str(block)}')
+                                       callback_data=f'user_order_forward_{str(block)}')
     kb_builder.row(*buttons, width=1)
     kb_builder.row(button_back, button_next)
     return kb_builder.as_markup()
