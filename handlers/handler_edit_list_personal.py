@@ -91,6 +91,7 @@ async def get_id_tg_personal(message: Message, state: FSMContext):
         await state.set_state(default_state)
     else:
         await message.answer(text=f'Пользователь c id={tg_id_personal} в базе данных не найден')
+    await state.set_state(default_state)
 
 
 @router.callback_query(F.data == 'ban_user')
