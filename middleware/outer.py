@@ -20,7 +20,7 @@ class FirstOuterMiddleware(BaseMiddleware):
         user: User = data.get('event_from_user')
         if user is not None:
             user_check = await rq.get_user_tg_id(tg_id=user.id)
-            if user_check.role == 'ban':
+            if user_check and user_check.role == 'ban':
                 text = 'Вас забанили'
                 try:
                     await event.answer(text=text)

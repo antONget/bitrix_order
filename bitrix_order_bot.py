@@ -47,8 +47,8 @@ async def main():
     dp.include_router(handler_user.router)
     dp.include_router(other_handlers.router)
     # Здесь будем регистрировать middleware
-    # dp.message.middleware(FirstOuterMiddleware())
-    # dp.callback_query.middleware(FirstOuterMiddleware())
+    dp.message.middleware(FirstOuterMiddleware())
+    dp.callback_query.middleware(FirstOuterMiddleware())
 
     @dp.error()
     async def error_handler(event: ErrorEvent):
