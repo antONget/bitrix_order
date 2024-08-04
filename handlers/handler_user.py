@@ -121,7 +121,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                                          reply_markup=keyboard,
                                          parse_mode='html')
     except TelegramBadRequest:
-        await callback.message.edit_text(text=f'<b>Клиент:</b>\n'
+        await callback.message.edit_text(text=f'<b>Клиeнт:</b>\n'
                                               f'{list_orders[num_block].client_info}\n'
                                               f'<b>Заказ:</b>\n'
                                               f'{list_orders[num_block].task_info}\n'
@@ -163,7 +163,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                                          reply_markup=keyboard,
                                          parse_mode='html')
     except TelegramBadRequest:
-        await callback.message.edit_text(text=f'<b>Клиент:</b>\n'
+        await callback.message.edit_text(text=f'<b>Клиeнт:</b>\n'
                                               f'{list_orders[num_block].client_info}\n'
                                               f'<b>Заказ:</b>\n'
                                               f'{list_orders[num_block].task_info}\n'
