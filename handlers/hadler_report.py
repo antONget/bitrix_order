@@ -83,7 +83,7 @@ async def process_simple_calendar_finish(callback: CallbackQuery, callback_data:
         await state.update_data(period_finish=date.strftime("%m/%d/%y"))
         await state.update_data(salesperiod=0)
         await state.set_state(default_state)
-        await callback.message.answer(text='Раздел в разработке. Здесь будет формироваться отчет по всем заказам')
+        # await callback.message.answer(text='Раздел в разработке. Здесь будет формироваться отчет по всем заказам')
         await get_report()
         file_path = "list_report.xlsx"
         await callback.message.answer_document(FSInputFile(file_path))

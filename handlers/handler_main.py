@@ -25,7 +25,7 @@ class Task(StatesGroup):
 
 
 @router.message(CommandStart())
-async def process_start_command(message: Message) -> None:
+async def process_start_command(message: Message, state: FSMContext) -> None:
     """
     Запуск бота - нажата кнопка "Начать" или введена команда "/start"
     Разграничиваем персонал и пользователей
@@ -33,6 +33,7 @@ async def process_start_command(message: Message) -> None:
     :return:
     """
     logging.info("process_start_command")
+    await state.set_state(default_state)
     data = {"tg_id": message.chat.id, "username": message.from_user.username}
     if str(message.chat.id) in config.tg_bot.admin_ids.split(','):
         data = {"tg_id": message.chat.id, "username": message.from_user.username, "role": rq.UserRole.admin}
