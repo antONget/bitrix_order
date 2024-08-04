@@ -354,6 +354,7 @@ async def search_order_id_bitrix(message: Message, state: FSMContext):
     """
     Поиск заказа по его ID в системе bitrix
     :param message:
+    :param state:
     :return: 
     """
     bitrix_id = int(message.text)

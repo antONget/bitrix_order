@@ -101,11 +101,12 @@ async def add_task(message: Message, state: FSMContext) -> None:
 
 
 @router.message(StateFilter(Task.id_task))
-async def get_id_bitrix_error(message: Message):
+async def get_id_bitrix_error(message: Message, state: FSMContext):
     """
     Ошибка при вводе номера заказ
     :param message:
     :return:
     """
     logging.info(f'get_id_bitrix_error')
-    await message.answer(text='Введите целое число. Повторите ввод.')
+    await message.answer(text='Введите целое число.')
+    await state.set_state(default_state)
