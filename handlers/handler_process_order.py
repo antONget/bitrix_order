@@ -289,7 +289,7 @@ async def get_amount_order_error(message: Message):
     :return:
     """
     logging.info(f'get_amount_order_error')
-    await message.answer(text='Введите целое число')
+    await message.answer(text='Введите целое число. Повторите ввод')
 
 
 @router.callback_query(F.data.startswith('set_new_'))
@@ -350,7 +350,7 @@ async def process_set_order_close(callback: CallbackQuery, state: FSMContext) ->
 
 
 @router.message(F.text, StateFilter(OrderPersonal.search_id))
-async def search_order_id_bitrix(message: Message):
+async def search_order_id_bitrix(message: Message, state: FSMContext):
     """
     Поиск заказа по его ID в системе bitrix
     :param message:
@@ -370,3 +370,4 @@ async def search_order_id_bitrix(message: Message):
         #     await message.answer(text='В базе данных несколько заказов с таким ID')
     else:
         await message.answer(text=f'Заказ не найден!')
+    await state.set_state(default_state)
