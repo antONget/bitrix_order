@@ -14,7 +14,9 @@ def keyboard_select_role() -> InlineKeyboardMarkup:
                                     callback_data='edit_list_manager')
     button_3 = InlineKeyboardButton(text='Бан',
                                     callback_data='ban_user')
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_1, button_2], [button_3]])
+    button_4 = InlineKeyboardButton(text='Добавить пользователя',
+                                    callback_data='add_user')
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_1, button_2], [button_4], [button_3]])
     return keyboard
 
 

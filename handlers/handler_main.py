@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart
 from aiogram.filters import StateFilter
@@ -22,28 +22,57 @@ config: Config = load_config()
 
 class Task(StatesGroup):
     id_task = State()
+    token = State()
 
 
 @router.message(CommandStart())
 async def process_start_command(message: Message, state: FSMContext) -> None:
     """
     Запуск бота - нажата кнопка "Начать" или введена команда "/start"
-    Разграничиваем персонал и пользователей
+    Разграничиваем персонал и пользователей (если пользователя нет в базе то заправшиваем у него токен)
     :param message:
+    :param state:
     :return:
     """
-    logging.info("process_start_command")
+    logging.info(f"process_start_command {message.chat.id}")
     await state.set_state(default_state)
-    data = {"tg_id": message.chat.id, "username": message.from_user.username}
+    # администратор
     if str(message.chat.id) in config.tg_bot.admin_ids.split(','):
-        data = {"tg_id": message.chat.id, "username": message.from_user.username, "role": rq.UserRole.admin}
-    await rq.add_user(data=data)
-    if await check_personal(tg_id=message.chat.id):
-        await message.answer(text=f'Приветственное сообщение',
-                             reply_markup=kb.keyboards_main())
+        data = {"token": "admin", "tg_id": message.chat.id, "username": message.from_user.username,
+                "role": rq.UserRole.admin}
+        await rq.add_admin(data=data)
+    # есть ли пользователь в таблице
+    if await rq.get_user_tg_id(tg_id=message.chat.id):
+        # относится к персоналу
+        if await check_personal(tg_id=message.chat.id):
+            await message.answer(text=f'Приветственное сообщение',
+                                 reply_markup=kb.keyboards_main())
+        # или пользователю
+        else:
+            await message.answer(text=f'Приветственное сообщение',
+                                 reply_markup=kb.keyboards_main_user())
     else:
+        await message.answer(text='Для доступа к боту пришлите токен.')
+        await state.set_state(Task.token)
+
+
+@router.message(StateFilter(Task.token))
+async def get_token(message: Message, state: FSMContext, bot: Bot):
+    """
+    Получение токена от пользователя и проверка его в базе
+    :param message:
+    :param state:
+    :param bot:
+    :return:
+    """
+    user = await rq.get_user_token(token=message.text)
+    if user and not user.tg_id:
+        data = {"token": message.text, "tg_id": message.chat.id, "username": message.from_user.username}
+        await rq.set_add_user(data=data)
         await message.answer(text=f'Приветственное сообщение',
                              reply_markup=kb.keyboards_main_user())
+    else:
+        await message.answer(text='TOKEN на прошел верификацию')
 
 
 @router.message(F.text == 'Разместить заказ')
@@ -105,6 +134,7 @@ async def get_id_bitrix_error(message: Message, state: FSMContext):
     """
     Ошибка при вводе номера заказ
     :param message:
+    :param state:
     :return:
     """
     logging.info(f'get_id_bitrix_error')

@@ -14,19 +14,47 @@ class UserRole:
     personal = "personal"
 
 
-async def add_user(data: dict):
+async def add_admin(data: dict):
     """
     Добавляем нового пользователя если его еще нет в БД
     :param data:
     :return:
     """
-    logging.info(f'add_user')
+    logging.info(f'add_admin')
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.tg_id == data["tg_id"]))
-
         if not user:
             session.add(User(**data))
             await session.commit()
+
+
+async def set_add_user(data: dict):
+    """
+    Добавляем нового пользователя если его еще нет в БД
+    :param data:
+    :return:
+    """
+    logging.info(f'set_add_user')
+    async with async_session() as session:
+        user = await session.scalar(select(User).where(User.tg_id == data["tg_id"]))
+        if not user:
+            token = await session.scalar(select(User).where(User.token == data["token"]))
+            if token:
+                token.tg_id = data["tg_id"]
+                token.username = data["username"]
+                await session.commit()
+
+
+async def add_token(data: dict):
+    """
+    Добавляем токен
+    :param data:
+    :return:
+    """
+    logging.info(f'add_token')
+    async with async_session() as session:
+        session.add(User(**data))
+        await session.commit()
 
 
 async def get_all_users() -> list[User]:
@@ -54,6 +82,7 @@ async def get_users_role(role: str) -> list[User]:
 async def get_users_role_not(role: str) -> list[User]:
     """
     Получаем список всех пользователей c определенной ролью
+    role
     :return:
     """
     logging.info(f'get_users_role_not')
@@ -65,11 +94,24 @@ async def get_users_role_not(role: str) -> list[User]:
 async def get_user_tg_id(tg_id: int):
     """
     Получаем информацию по пользователю
+    :param tg_id:
     :return:
     """
     logging.info(f'get_user_tg_id')
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.tg_id == tg_id))
+        return user
+
+
+async def get_user_token(token: str):
+    """
+    Получаем информацию по пользователю
+    :param token:
+    :return:
+    """
+    logging.info(f'get_user_token')
+    async with async_session() as session:
+        user = await session.scalar(select(User).where(User.token == token))
         return user
 
 

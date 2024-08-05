@@ -9,7 +9,7 @@ import keyboards.keyboards_edit_list_personal as kb
 import database.requests as rq
 from filter.admin_filter import check_super_admin
 from config_data.config import Config, load_config
-
+from secrets import token_urlsafe
 import asyncio
 import logging
 
@@ -33,6 +33,20 @@ async def process_change_list_personal(message: Message) -> None:
     logging.info(f'process_change_list_personal: {message.chat.id}')
     await message.answer(text="Выберите роль которую вы хотите изменить.",
                          reply_markup=kb.keyboard_select_role())
+
+
+@router.callback_query(F.data == 'add_user')
+async def process_add_user(callback: CallbackQuery) -> None:
+    logging.info(f'process_add_user: {callback.message.chat.id}')
+    token = str(token_urlsafe(8))
+    data = {"token": token}
+    await rq.add_token(data=data)
+    await callback.message.edit_text(text=f'Для добавления пользователя в бот отправьте ему этот TOKEN'
+                                          f' <code>{token}</code>.'
+                                          f' По этому TOKEN может быть добавлен только один пользователь,'
+                                          f' не делитесь и не показывайте его никому, кроме тех лиц для кого он'
+                                          f' предназначен',
+                                     parse_mode='html')
 
 
 # добавление администратора

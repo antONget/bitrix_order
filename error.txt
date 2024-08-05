@@ -29,16 +29,8 @@ Traceback (most recent call last):
     return await handler(event, data)
   File "/Users/antonponomarev/PycharmProjects/bitrix_order/venv/lib/python3.10/site-packages/aiogram/dispatcher/event/handler.py", line 43, in call
     return await wrapped()
-  File "/Users/antonponomarev/PycharmProjects/bitrix_order/handlers/handler_user.py", line 201, in show_detail_info_order
-    await callback.message.answer_media_group(media=media)
-  File "/Users/antonponomarev/PycharmProjects/bitrix_order/venv/lib/python3.10/site-packages/aiogram/methods/base.py", line 84, in emit
-    return await bot(self)
-  File "/Users/antonponomarev/PycharmProjects/bitrix_order/venv/lib/python3.10/site-packages/aiogram/client/bot.py", line 485, in __call__
-    return await self.session(self, method, timeout=request_timeout)
-  File "/Users/antonponomarev/PycharmProjects/bitrix_order/venv/lib/python3.10/site-packages/aiogram/client/session/base.py", line 254, in __call__
-    return cast(TelegramType, await middleware(bot, method))
-  File "/Users/antonponomarev/PycharmProjects/bitrix_order/venv/lib/python3.10/site-packages/aiogram/client/session/aiohttp.py", line 189, in make_request
-    response = self.check_response(
-  File "/Users/antonponomarev/PycharmProjects/bitrix_order/venv/lib/python3.10/site-packages/aiogram/client/session/base.py", line 120, in check_response
-    raise TelegramBadRequest(method=method, message=description)
-aiogram.exceptions.TelegramBadRequest: Telegram server says - Bad Request: can't parse InputMedia: media not found
+  File "/Users/antonponomarev/PycharmProjects/bitrix_order/handlers/handler_main.py", line 47, in process_start_command
+    if await check_personal(tg_id=message.chat.id):
+  File "/Users/antonponomarev/PycharmProjects/bitrix_order/filter/admin_filter.py", line 30, in check_personal
+    if info_user.role not in [rq.UserRole.user]:
+AttributeError: 'NoneType' object has no attribute 'role'

@@ -16,8 +16,9 @@ class User(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    tg_id = mapped_column(BigInteger)
-    username: Mapped[str] = mapped_column(String(20))
+    token: Mapped[str] = mapped_column(String(20))
+    tg_id = mapped_column(BigInteger, default=0)
+    username: Mapped[str] = mapped_column(String(20), default='username')
     role: Mapped[str] = mapped_column(String(200), default='user')
     balance: Mapped[float] = mapped_column(Float, default=0)
 
