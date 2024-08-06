@@ -6,9 +6,9 @@ config: Config = load_config()
 # замените на ваш вебхук для доступа к Bitrix24
 webhook = config.tg_bot.bitrix
 bx = Bitrix(webhook)
-contact = bx.get_all(method='crm.lead.list')
-print(contact)
-print(requests.get(f'{config.tg_bot.bitrix}/crm.contact.get?id=1').json()['result'])
+# contact = bx.get_all(method='crm.lead.list')
+# print(contact)
+print(requests.get(f'{config.tg_bot.bitrix}/crm.lead.get?id=1').json()['result'])
 # contacts = bx.get_by_ID(
 #     'crm.deal.contact.items.get',
 #     [c['ID'] for c in contact])

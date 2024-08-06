@@ -9,7 +9,7 @@ from aiogram.fsm.state import State, StatesGroup, default_state
 from config_data.config import Config, load_config
 import database.requests as rq
 import keyboards.keyboard_main as kb
-from filter.admin_filter import check_personal
+from filter.admin_filter import check_personal, check_super_admin
 
 from faker import Faker
 from datetime import datetime
@@ -37,7 +37,7 @@ async def process_start_command(message: Message, state: FSMContext) -> None:
     logging.info(f"process_start_command {message.chat.id}")
     await state.set_state(default_state)
     # администратор
-    if str(message.chat.id) in config.tg_bot.admin_ids.split(','):
+    if check_super_admin(telegram_id=message.chat.id):
         data = {"token": "admin", "tg_id": message.chat.id, "username": message.from_user.username,
                 "role": rq.UserRole.admin}
         await rq.add_admin(data=data)
@@ -57,11 +57,10 @@ async def process_start_command(message: Message, state: FSMContext) -> None:
 
 
 @router.message(StateFilter(Task.token))
-async def get_token(message: Message, state: FSMContext, bot: Bot):
+async def get_token(message: Message, bot: Bot):
     """
     Получение токена от пользователя и проверка его в базе
     :param message:
-    :param state:
     :param bot:
     :return:
     """
@@ -71,6 +70,13 @@ async def get_token(message: Message, state: FSMContext, bot: Bot):
         await rq.set_add_user(data=data)
         await message.answer(text=f'Приветственное сообщение',
                              reply_markup=kb.keyboards_main_user())
+        list_admin = config.tg_bot.admin_ids.split(',')
+        for admin in list_admin:
+            try:
+                await bot.send_message(chat_id=int(admin),
+                                       text=f'Пользователь {message.from_user.username} успешно авторизовался в боте')
+            except IndexError:
+                pass
     else:
         await message.answer(text='TOKEN на прошел верификацию')
 

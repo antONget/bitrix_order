@@ -59,7 +59,7 @@ async def add_token(data: dict):
 
 async def get_all_users() -> list[User]:
     """
-    Получаем список всех пользователей зарегестрированных в боте
+    Получаем список всех пользователей зарегистрированных в боте
     :return:
     """
     logging.info(f'get_all_users')

@@ -53,7 +53,7 @@ async def main():
     @dp.error()
     async def error_handler(event: ErrorEvent):
         logger.critical("Критическая ошибка: %s", event.exception, exc_info=True)
-        await bot.send_message(chat_id=config.tg_bot.admin_ids,
+        await bot.send_message(chat_id=config.tg_bot.support_id,
                                text=f'{event.exception}')
         formatted_lines = traceback.format_exc()
         text_file = open('error.txt', 'w')
