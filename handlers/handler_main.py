@@ -57,11 +57,12 @@ async def process_start_command(message: Message, state: FSMContext) -> None:
 
 
 @router.message(StateFilter(Task.token))
-async def get_token(message: Message, bot: Bot):
+async def get_token(message: Message, bot: Bot, state: FSMContext):
     """
     Получение токена от пользователя и проверка его в базе
     :param message:
     :param bot:
+    :param state:
     :return:
     """
     user = await rq.get_user_token(token=message.text)
@@ -77,6 +78,7 @@ async def get_token(message: Message, bot: Bot):
                                        text=f'Пользователь {message.from_user.username} успешно авторизовался в боте')
             except IndexError:
                 pass
+        await state.set_state(default_state)
     else:
         await message.answer(text='TOKEN на прошел верификацию')
 
