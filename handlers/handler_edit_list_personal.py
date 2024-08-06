@@ -234,6 +234,7 @@ async def process_not_add_admin_list(callback: CallbackQuery, bot: Bot) -> None:
     """
     Отмена назначение персонала
     :param callback:
+    :param bot:
     :return:
     """
     logging.info(f'process_not_add_admin_list: {callback.message.chat.id}')

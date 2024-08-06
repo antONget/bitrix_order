@@ -143,6 +143,6 @@ async def get_id_bitrix_error(message: Message, state: FSMContext):
     :param state:
     :return:
     """
-    logging.info(f'get_id_bitrix_error')
+    logging.info(f'get_id_bitrix_error {message.chat.id}')
     await message.answer(text='Введите целое число.')
     await state.set_state(default_state)
