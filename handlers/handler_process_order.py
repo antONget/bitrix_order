@@ -72,13 +72,35 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
             return
         # выводим карточки
         keyboard = kb.keyboards_order_item(list_orders=list_orders, block=0, status_order=status_order)
-        await callback.message.edit_text(text=f'<b>Клиент:</b>\n'
-                                              f'{list_orders[0].client_info}\n'
-                                              f'<b>Заказ:</b>\n'
-                                              f'{list_orders[0].task_info}\n'
-                                              f'<b>Стоимость:</b> {list_orders[0].amount}\n',
-                                         reply_markup=keyboard,
-                                         parse_mode='html')
+
+        order = list_orders[0]
+        name = ''
+        for n in [order.client_second_name, order.client_name, order.client_last_name]:
+            if n != 'None':
+                name += f'{n} '
+        address = ''
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                address += f'Саратов, {order.task_saratov}, {order.task_street}'
+            else:
+                address += f'Саратов, {order.task_street}'
+        if order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                address += f'Энгельс, {order.task_engels}, {order.task_street}'
+            else:
+                address += f'Энгельс, {order.task_street}'
+        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Клиент:</b>\n'
+                                           f'<i>Имя:</i> {name}\n'
+                                           f'<i>Телефон: {order.client_phone}</i>\n'
+                                           f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Оплата:</i> {order.task_pay}\n'
+                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
     else:
         await callback.answer(text=f'У вас недостаточно прав для работы с этим функционалом. '
                                    f'Обратитесь к администратору.', show_alert=True)
@@ -106,21 +128,63 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
         num_block = 0
     keyboard = kb.keyboards_order_item(list_orders=list_orders, block=num_block, status_order=status_order)
     try:
-        await callback.message.edit_text(text=f'<b>Клиент:</b>\n'
-                                              f'{list_orders[num_block].client_info}\n'
-                                              f'<b>Заказ:</b>\n'
-                                              f'{list_orders[num_block].task_info}\n'
-                                              f'<b>Стоимость:</b> {list_orders[num_block].amount}\n',
-                                         reply_markup=keyboard,
-                                         parse_mode='html')
+        order = list_orders[num_block]
+        name = ''
+        for n in [order.client_second_name, order.client_name, order.client_last_name]:
+            if n != 'None':
+                name += f'{n} '
+        address = ''
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                address += f'Саратов, {order.task_saratov}, {order.task_street}'
+            else:
+                address += f'Саратов, {order.task_street}'
+        if order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                address += f'Энгельс, {order.task_engels}, {order.task_street}'
+            else:
+                address += f'Энгельс, {order.task_street}'
+        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Клиент:</b>\n'
+                                           f'<i>Имя:</i> {name}\n'
+                                           f'<i>Телефон: {order.client_phone}</i>\n'
+                                           f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Оплата:</i> {order.task_pay}\n'
+                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
     except TelegramBadRequest:
-        await callback.message.edit_text(text=f'<b>Клиeнт:</b>\n'
-                                              f'{list_orders[num_block].client_info}\n'
-                                              f'<b>Заказ:</b>\n'
-                                              f'{list_orders[num_block].task_info}\n'
-                                              f'<b>Стоимость:</b> {list_orders[num_block].amount}\n',
-                                         reply_markup=keyboard,
-                                         parse_mode='html')
+        order = list_orders[num_block]
+        name = ''
+        for n in [order.client_second_name, order.client_name, order.client_last_name]:
+            if n != 'None':
+                name += f'{n} '
+        address = ''
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                address += f'Саратов, {order.task_saratov}, {order.task_street}'
+            else:
+                address += f'Саратов, {order.task_street}'
+        if order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                address += f'Энгельс, {order.task_engels}, {order.task_street}'
+            else:
+                address += f'Энгельс, {order.task_street}'
+        await callback.message.answer(text=f'<b>Закaз № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Клиент:</b>\n'
+                                           f'<i>Имя:</i> {name}\n'
+                                           f'<i>Телефон: {order.client_phone}</i>\n'
+                                           f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Оплата:</i> {order.task_pay}\n'
+                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
 
 
 # <<
@@ -145,21 +209,63 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
         num_block = count_block - 1
     keyboard = kb.keyboards_order_item(list_orders=list_orders, block=num_block, status_order=status_order)
     try:
-        await callback.message.edit_text(text=f'<b>Клиент:</b>\n'
-                                              f'{list_orders[num_block].client_info}\n'
-                                              f'<b>Заказ:</b>\n'
-                                              f'{list_orders[num_block].task_info}\n'
-                                              f'<b>Стоимость:</b> {list_orders[num_block].amount}\n',
-                                         reply_markup=keyboard,
-                                         parse_mode='html')
+        order = list_orders[num_block]
+        name = ''
+        for n in [order.client_second_name, order.client_name, order.client_last_name]:
+            if n != 'None':
+                name += f'{n} '
+        address = ''
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                address += f'Саратов, {order.task_saratov}, {order.task_street}'
+            else:
+                address += f'Саратов, {order.task_street}'
+        if order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                address += f'Энгельс, {order.task_engels}, {order.task_street}'
+            else:
+                address += f'Энгельс, {order.task_street}'
+        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Клиент:</b>\n'
+                                           f'<i>Имя:</i> {name}\n'
+                                           f'<i>Телефон: {order.client_phone}</i>\n'
+                                           f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Оплата:</i> {order.task_pay}\n'
+                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
     except TelegramBadRequest:
-        await callback.message.edit_text(text=f'<b>Клиeнт:</b>\n'
-                                              f'{list_orders[num_block].client_info}\n'
-                                              f'<b>Заказ:</b>\n'
-                                              f'{list_orders[num_block].task_info}\n'
-                                              f'<b>Стоимость:</b> {list_orders[0].amount}\n',
-                                         reply_markup=keyboard,
-                                         parse_mode='html')
+        order = list_orders[num_block]
+        name = ''
+        for n in [order.client_second_name, order.client_name, order.client_last_name]:
+            if n != 'None':
+                name += f'{n} '
+        address = ''
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                address += f'Саратов, {order.task_saratov}, {order.task_street}'
+            else:
+                address += f'Саратов, {order.task_street}'
+        if order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                address += f'Энгельс, {order.task_engels}, {order.task_street}'
+            else:
+                address += f'Энгельс, {order.task_street}'
+        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Клиент:</b>\n'
+                                           f'<i>Имя:</i> {name}\n'
+                                           f'<i>Телефон: {order.client_phone}</i>\n'
+                                           f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Оплата:</i> {order.task_pay}\n'
+                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
 
 
 @router.callback_query(F.data.startswith('detail_order_'))
@@ -174,14 +280,16 @@ async def show_detail_info_order(callback: CallbackQuery) -> None:
     order = await rq.get_order_id(id_order=id_order)
     detail_text = order.order_detail_text
     detail_photo = order.order_detail_photo
+    # детальной информации нет
     if detail_photo == 'None' and detail_text == 'None':
-        await callback.message.edit_text(text=f'<b>Заказ: {id_order}</b>\n\n'
+        await callback.message.edit_text(text=f'<b>Заказ: {order.id_bitrix}</b>\n\n'
                                               f'Дополнительные материалы не добавлены в базу данных',
                                          reply_markup=kb.keyboard_back_item(),
                                          parse_mode='html')
     else:
+        # есть и фотографии и текст
         if detail_photo != 'None' and detail_text != "None":
-            caption = f'<b>Заказ: {id_order}</b>\n\n' + detail_text
+            caption = f'<b>Заказ: {order.id_bitrix}</b>\n\n' + detail_text
             list_photo = [item for item in detail_photo.split('///') if item]
             if len(list_photo) > 1:
                 media = []
@@ -195,6 +303,7 @@ async def show_detail_info_order(callback: CallbackQuery) -> None:
                 await callback.message.answer_photo(photo=list_photo[0], caption=caption,
                                                     reply_markup=kb.keyboard_back_item(),
                                                     parse_mode='html')
+        # есть только фото
         elif detail_photo != 'None' and detail_text == "None":
             caption = f'<b>Заказ: {id_order}</b>\n\n'
             list_photo = [item for item in detail_photo.split('///') if item]
@@ -210,6 +319,7 @@ async def show_detail_info_order(callback: CallbackQuery) -> None:
                 await callback.message.answer_photo(photo=list_photo[0], caption=caption,
                                                     reply_markup=kb.keyboard_back_item(),
                                                     parse_mode='html')
+        # есть только текст
         elif detail_photo == 'None' and detail_text != "None":
             caption = f'<b>Заказ: {id_order}</b>\n\n' + detail_text
             await callback.message.answer(text=caption,
@@ -238,13 +348,34 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
         return
     # выводим карточки
     keyboard = kb.keyboards_order_item(list_orders=list_orders, block=0, status_order=status_order)
-    await callback.message.edit_text(text=f'<b>Клиент:</b>\n'
-                                          f'{list_orders[0].client_info}\n'
-                                          f'<b>Заказ:</b>\n'
-                                          f'{list_orders[0].task_info}\n'
-                                          f'<b>Стоимость:</b> {list_orders[0].amount}\n',
-                                     reply_markup=keyboard,
-                                     parse_mode='html')
+    order = list_orders[0]
+    name = ''
+    for n in [order.client_second_name, order.client_name, order.client_last_name]:
+        if n != 'None':
+            name += f'{n} '
+    address = ''
+    if order.task_saratov != 'None':
+        if 'город' not in order.task_saratov:
+            address += f'Саратов, {order.task_saratov}, {order.task_street}'
+        else:
+            address += f'Саратов, {order.task_street}'
+    if order.task_engels != 'None':
+        if 'город' not in order.task_engels:
+            address += f'Энгельс, {order.task_engels}, {order.task_street}'
+        else:
+            address += f'Энгельс, {order.task_street}'
+    await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+                                       f'<b>Клиент:</b>\n'
+                                       f'<i>Имя:</i> {name}\n'
+                                       f'<i>Телефон: {order.client_phone}</i>\n'
+                                       f'<i>Адрес:</i> {address}\n\n'
+                                       f'<b>Заявка</b>\n'
+                                       f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                       f'<i>Детали работы:</i> {order.task_detail}\n'
+                                       f'<i>Оплата:</i> {order.task_pay}\n'
+                                       f'<i>Начало работ:</i> {order.task_begin}\n',
+                                  reply_markup=keyboard,
+                                  parse_mode='html')
 
 
 @router.callback_query(F.data.startswith('set_complete_'))
@@ -360,15 +491,34 @@ async def search_order_id_bitrix(message: Message, state: FSMContext):
     bitrix_id = int(message.text)
     order = await rq.get_order_bitrix_id(bitrix_id=bitrix_id)
     if order:
-        # if len(orders.all()) == 1:
-        await message.answer(text=f'<b>Клиент:</b>\n'
-                                  f'{order.client_info}\n'
-                                  f'<b>Заказ:</b>\n'
-                                  f'{order.task_info}\n'
-                                  f'<b>Стоимость:</b> {order.amount}\n',
+
+        name = ''
+        for n in [order.client_second_name, order.client_name, order.client_last_name]:
+            if n != 'None':
+                name += f'{n} '
+        address = ''
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                address += f'Саратов, {order.task_saratov}, {order.task_street}'
+            else:
+                address += f'Саратов, {order.task_street}'
+        if order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                address += f'Энгельс, {order.task_engels}, {order.task_street}'
+            else:
+                address += f'Энгельс, {order.task_street}'
+        await message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+                                  f'<b>Клиент:</b>\n'
+                                  f'<i>Имя:</i> {name}\n'
+                                  f'<i>Телефон: {order.client_phone}</i>\n'
+                                  f'<i>Адрес:</i> {address}\n\n'
+                                  f'<b>Заявка</b>\n'
+                                  f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                  f'<i>Детали работы:</i> {order.task_detail}\n'
+                                  f'<i>Оплата:</i> {order.task_pay}\n'
+                                  f'<i>Начало работ:</i> {order.task_begin}\n',
                              parse_mode='html')
-        # else:
-        #     await message.answer(text='В базе данных несколько заказов с таким ID')
+
     else:
         await message.answer(text=f'Заказ не найден!')
     await state.set_state(default_state)
