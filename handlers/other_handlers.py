@@ -16,7 +16,8 @@ config: Config = load_config()
 @router.callback_query()
 async def all_callback(callback: CallbackQuery) -> None:
     logging.info(f'all_callback: {callback.message.chat.id} / {callback.data}')
-
+    await callback.message.answer(text='Я вас не понимаю!')
+    await callback.answer()
 
 @router.message()
 async def all_message(message: Message) -> None:
@@ -63,3 +64,6 @@ async def all_message(message: Message) -> None:
             await list_users_to_exel()
             file_path = "list_user.xlsx"
             await message.answer_document(FSInputFile(file_path))
+
+        else:
+            await message.answer('Я вас не понимаю!')
