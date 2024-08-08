@@ -6,7 +6,7 @@ config: Config = load_config()
 import asyncio
 
 
-async def get_data_deal(id_deal: int) -> dict | bool:
+async def get_data_deal(id_deal: int) -> dict | bool | str:
     """
     Функция для получения полей заявки:
     Клиент: Имя, Телефон
@@ -21,6 +21,7 @@ async def get_data_deal(id_deal: int) -> dict | bool:
 
     deal_dict = {"Тип работы": {"UF_CRM_1722889585844": 'None'},
                  "Детали работы:": {"UF_CRM_1722889647213": 'None'},
+                 "Саратовская область ": {"UF_CRM_1723096401639": "None"},
                  "Саратов": {"UF_CRM_1722889776466": 'None'},
                  "Энгельс": {"UF_CRM_1722889900952": 'None'},
                  "Улица": {"UF_CRM_1722889043533": "None"},
@@ -29,11 +30,14 @@ async def get_data_deal(id_deal: int) -> dict | bool:
     order_dict = {**contact_dict, **deal_dict}
     result = requests.get(f'{config.tg_bot.bitrix}/crm.deal.get?id={id_deal}').json()
     if 'error' in result.keys():
-        return False
+        return "No_deal"
     deal: dict = requests.get(f'{config.tg_bot.bitrix}/crm.deal.get?id={id_deal}').json()['result']
     field_deal: dict = requests.get(f'{config.tg_bot.bitrix}/crm.deal.fields?id=30').json()['result']
-    contact: dict = requests.get(f'{config.tg_bot.bitrix}/crm.contact.get?id={deal["CONTACT_ID"]}').json()['result']
-
+    result: dict = requests.get(f'{config.tg_bot.bitrix}/crm.contact.get?id={deal["CONTACT_ID"]}').json()
+    if 'error' in result.keys():
+        return 'No_contact'
+    else:
+        contact: dict = requests.get(f'{config.tg_bot.bitrix}/crm.contact.get?id={deal["CONTACT_ID"]}').json()['result']
     for key, value in contact.items():
         for k, v in order_dict.items():
             temp = list(v.keys())
@@ -114,4 +118,4 @@ for key in deal.keys():
 
 if __name__ == '__main__':
     # id_deal = int(input('Пришлите номер заявки: '))
-    asyncio.run(get_data_deal(id_deal=1))
+    asyncio.run(get_data_deal(id_deal=38))

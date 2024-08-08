@@ -154,8 +154,12 @@ async def add_task(message: Message, state: FSMContext) -> None:
         # return
     await message.answer(text='Запрос отправлен в bitrix...')
     order_dict: dict = await get_data_deal(id_deal=id_bitrix)
-    if not order_dict:
-        await message.answer(text='Такой заказ не найден!')
+    if order_dict == 'No_deal':
+        await message.answer(text=f'Заказ {id_bitrix}н е найден!')
+        await state.set_state(default_state)
+        return
+    if order_dict == 'No_contact':
+        await message.answer(text=f'К заказу № {id_bitrix} не добавлен контакт!')
         await state.set_state(default_state)
         return
     data = {"id_bitrix": id_bitrix,
@@ -168,6 +172,7 @@ async def add_task(message: Message, state: FSMContext) -> None:
             "client_phone": order_dict["Телефон"]["PHONE"],
             "task_type_work": order_dict["Тип работы"]["UF_CRM_1722889585844"],
             "task_detail": order_dict["Детали работы:"]["UF_CRM_1722889647213"],
+            "task_saratov_area": order_dict["Саратовская область "]["UF_CRM_1723096401639"],
             "task_saratov": order_dict["Саратов"]["UF_CRM_1722889776466"],
             "task_engels": order_dict["Энгельс"]["UF_CRM_1722889900952"],
             "task_street": order_dict["Улица"]["UF_CRM_1722889043533"],
