@@ -89,6 +89,8 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
+        if order.task_saratov_area != 'None':
+            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
         await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
                                            f'<b>Клиент:</b>\n'
                                            f'<i>Имя:</i> {name}\n'
@@ -144,6 +146,8 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
+        if order.task_saratov_area != 'None':
+            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
         await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
                                            f'<b>Клиент:</b>\n'
                                            f'<i>Имя:</i> {name}\n'
@@ -173,6 +177,8 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
+        if order.task_saratov_area != 'None':
+            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
         await callback.message.answer(text=f'<b>Закaз № {order.id_bitrix}</b>\n\n'
                                            f'<b>Клиент:</b>\n'
                                            f'<i>Имя:</i> {name}\n'
@@ -225,6 +231,8 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
+        if order.task_saratov_area != 'None':
+            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
         await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
                                            f'<b>Клиент:</b>\n'
                                            f'<i>Имя:</i> {name}\n'
@@ -254,6 +262,8 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
+        if order.task_saratov_area != 'None':
+            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
         await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
                                            f'<b>Клиент:</b>\n'
                                            f'<i>Имя:</i> {name}\n'
@@ -364,6 +374,8 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
             address += f'Энгельс, {order.task_engels}, {order.task_street}'
         else:
             address += f'Энгельс, {order.task_street}'
+    if order.task_saratov_area != 'None':
+        address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
     await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
                                        f'<b>Клиент:</b>\n'
                                        f'<i>Имя:</i> {name}\n'
@@ -507,6 +519,8 @@ async def search_order_id_bitrix(message: Message, state: FSMContext):
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
+        if order.task_saratov_area != 'None':
+            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
         await message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
                                   f'<b>Клиент:</b>\n'
                                   f'<i>Имя:</i> {name}\n'

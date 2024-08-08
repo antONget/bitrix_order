@@ -54,6 +54,7 @@ class Order(Base):
     client_phone: Mapped[str] = mapped_column(String)
     task_type_work: Mapped[str] = mapped_column(String)
     task_detail: Mapped[str] = mapped_column(String)
+    task_saratov_area: Mapped[str] = mapped_column(String)
     task_saratov: Mapped[str] = mapped_column(String)
     task_engels: Mapped[str] = mapped_column(String)
     task_street: Mapped[str] = mapped_column(String)

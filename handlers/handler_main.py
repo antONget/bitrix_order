@@ -196,6 +196,8 @@ async def add_task(message: Message, state: FSMContext) -> None:
             address += f'Энгельс, {order.task_engels}, {order.task_street}'
         else:
             address += f'Энгельс, {order.task_street}'
+    if order.task_saratov_area != 'None':
+        address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
     await message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
                               f'<b>Клиент:</b>\n'
                               f'<i>Имя:</i> {name}\n'
