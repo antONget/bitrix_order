@@ -17,7 +17,7 @@ class Report(StatesGroup):
     period_finish = State()
 
 
-@router.message(F.text == 'Отчет')
+@router.message(F.text == '📄 Отчеты 📄')
 async def add_task(message: Message, state: FSMContext) -> None:
     """
     Получение отчета за выбранный период

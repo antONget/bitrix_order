@@ -25,7 +25,7 @@ class OrderPersonal(StatesGroup):
 
 
 # Персонал
-@router.message(F.text == 'Заказы')
+@router.message(F.text == '💼 Заказы 💼')
 async def process_order_list(message: Message) -> None:
     """
     Выбор статуса заказа для его обработки
@@ -34,7 +34,7 @@ async def process_order_list(message: Message) -> None:
     """
     logging.info(f'process_order_list: {message.chat.id}')
     if await check_personal(message.chat.id):
-        await message.answer(text="Выберите раздел",
+        await message.answer(text="Меню заказов:",
                              reply_markup=await kb.keyboard_select_status_order())
     else:
         await message.answer(text=f'У вас недостаточно прав для работы с этим функционалом.'
@@ -667,7 +667,7 @@ async def process_set_order_close(callback: CallbackQuery, state: FSMContext) ->
     :param state:
     :return:
     """
-    await callback.message.answer(text=f'Пришлите ID заказа')
+    await callback.message.answer(text=f'🔎 Пришлите ID заказа:')
     await state.set_state(OrderPersonal.search_id)
     await callback.answer()
 

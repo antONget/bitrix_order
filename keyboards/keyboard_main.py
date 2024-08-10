@@ -8,10 +8,10 @@ def keyboards_main() -> ReplyKeyboardMarkup:
     :return:
     """
     logging.info("keyboards_main")
-    button_1 = KeyboardButton(text='Разместить заказ')
-    button_2 = KeyboardButton(text='Заказы')
-    button_3 = KeyboardButton(text='Отчет')
-    button_4 = KeyboardButton(text='Персонал')
+    button_1 = KeyboardButton(text='✅ Разместить заказ ✅')
+    button_2 = KeyboardButton(text='💼 Заказы 💼')
+    button_3 = KeyboardButton(text='📄 Отчеты 📄')
+    button_4 = KeyboardButton(text='👨‍💼 Персонал 👨‍💼')
     keyboard = ReplyKeyboardMarkup(
         keyboard=[[button_1], [button_2], [button_3], [button_4]],
         resize_keyboard=True

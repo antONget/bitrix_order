@@ -9,20 +9,20 @@ async def keyboard_select_status_order() -> InlineKeyboardMarkup:
     Клавиатура для выбора заказов с определенным статусом
     :return:
     """
-    button_1 = InlineKeyboardButton(text=f'Новые заказы ({len(await rq.get_orders_status(rq.OrderStatus.new))})',
+    button_1 = InlineKeyboardButton(text=f'🔔 Новые заказы 🔔 ({len(await rq.get_orders_status(rq.OrderStatus.new))})',
                                     callback_data='order_status_new')
-    button_2 = InlineKeyboardButton(text=f'В работе ({len(await rq.get_orders_status(rq.OrderStatus.work))})',
+    button_2 = InlineKeyboardButton(text=f'🛠 В работе 🛠 ({len(await rq.get_orders_status(rq.OrderStatus.work))})',
                                     callback_data='order_status_work')
-    button_3 = InlineKeyboardButton(text=f'Выполненные ({len(await rq.get_orders_status(rq.OrderStatus.complete))})',
+    button_3 = InlineKeyboardButton(text=f'✅ Выполненные ✅ ({len(await rq.get_orders_status(rq.OrderStatus.complete))})',
                                     callback_data='order_status_complete')
     button_4 = InlineKeyboardButton(
-        text=f'Невостребованные ({len(await rq.get_orders_status(rq.OrderStatus.unclaimed))})',
+        text=f'🔕 Невостребованные🔕 ({len(await rq.get_orders_status(rq.OrderStatus.unclaimed))})',
         callback_data='order_status_unclaimed')
     button_5 = InlineKeyboardButton(
-        text=f'Отмененные ({len(await rq.get_orders_status(rq.OrderStatus.cancel))})',
+        text=f'🚫 Отмененные 🚫 ({len(await rq.get_orders_status(rq.OrderStatus.cancel))})',
         callback_data='order_status_cancel')
     button_6 = InlineKeyboardButton(
-        text=f'Поиск заказа',
+        text=f'🔎 Поиск заказа 🔍',
         callback_data='user_order_find')
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_1], [button_2], [button_3], [button_4], [button_5],
                                                      [button_6]])

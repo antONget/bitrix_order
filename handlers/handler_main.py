@@ -46,11 +46,11 @@ async def process_start_command(message: Message, state: FSMContext) -> None:
     if await rq.get_user_tg_id(tg_id=message.chat.id):
         # относится к персоналу
         if await check_personal(tg_id=message.chat.id):
-            await message.answer(text=f'Приветственное сообщение',
+            await message.answer(text=f'Я бот MasterClass. Рад с вами работать. 👋',
                                  reply_markup=kb.keyboards_main())
         # или пользователю
         else:
-            await message.answer(text=f'Приветственное сообщение',
+            await message.answer(text=f'Я бот MasterClass. Рад с вами работать. 👋',
                                  reply_markup=kb.keyboards_main_user())
     else:
         await message.answer(text='Для доступа к боту пришлите токен.')
@@ -70,7 +70,7 @@ async def get_token(message: Message, bot: Bot, state: FSMContext):
     if user and not user.tg_id:
         data = {"token": message.text, "tg_id": message.chat.id, "username": message.from_user.username}
         await rq.set_add_user(data=data)
-        await message.answer(text=f'Приветственное сообщение',
+        await message.answer(text=f'Я бот MasterClass. Рад с вами работать. 👋',
                              reply_markup=kb.keyboards_main_user())
         list_admin = config.tg_bot.admin_ids.split(',')
         for admin in list_admin:
@@ -84,7 +84,7 @@ async def get_token(message: Message, bot: Bot, state: FSMContext):
         await message.answer(text='TOKEN на прошел верификацию')
 
 
-@router.message(F.text == 'Разместить заказ')
+@router.message(F.text == '✅ Разместить заказ ✅')
 async def add_task(message: Message, state: FSMContext) -> None:
     """
     Функция добавления заказа в БД телеграм бота
@@ -94,7 +94,7 @@ async def add_task(message: Message, state: FSMContext) -> None:
     """
     logging.info(f'add_task {message.chat.id}')
     if await check_personal(tg_id=message.chat.id, role=rq.UserRole.dispatcher):
-        await message.answer(text='Отправьте номер заказа из Bitrix для отправки ее мастерам.')
+        await message.answer(text='👉 Введите ID заказа:')
         await state.set_state(Task.id_task)
     else:
         await message.answer(text=f'У вас недостаточно прав для работы с этим функционалом.'

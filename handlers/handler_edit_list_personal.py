@@ -23,7 +23,7 @@ class Personal(StatesGroup):
 
 
 # Персонал
-@router.message(F.text == 'Персонал', lambda message: check_super_admin(message.chat.id))
+@router.message(F.text == '👨‍💼 Персонал 👨‍💼', lambda message: check_super_admin(message.chat.id))
 async def process_change_list_personal(message: Message) -> None:
     """
     Выбор роли для редактирования списка
