@@ -16,7 +16,7 @@ async def keyboard_select_status_order() -> InlineKeyboardMarkup:
     button_3 = InlineKeyboardButton(text=f'✅ Выполненные ✅ ({len(await rq.get_orders_status(rq.OrderStatus.complete))})',
                                     callback_data='order_status_complete')
     button_4 = InlineKeyboardButton(
-        text=f'🔕 Невостребованные🔕 ({len(await rq.get_orders_status(rq.OrderStatus.unclaimed))})',
+        text=f'🔕 Невостребованные 🔕 ({len(await rq.get_orders_status(rq.OrderStatus.unclaimed))})',
         callback_data='order_status_unclaimed')
     button_5 = InlineKeyboardButton(
         text=f'🚫 Отмененные 🚫 ({len(await rq.get_orders_status(rq.OrderStatus.cancel))})',
