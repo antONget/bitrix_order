@@ -25,7 +25,7 @@ class OrderPersonal(StatesGroup):
 
 
 # Персонал
-@router.message(F.text == '💼 Заказы 💼')
+@router.message(F.text == '💼 Меню заказов 💼')
 async def process_order_list(message: Message) -> None:
     """
     Выбор статуса заказа для его обработки

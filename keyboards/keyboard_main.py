@@ -9,7 +9,7 @@ def keyboards_main() -> ReplyKeyboardMarkup:
     """
     logging.info("keyboards_main")
     button_1 = KeyboardButton(text='✅ Разместить заказ ✅')
-    button_2 = KeyboardButton(text='💼 Заказы 💼')
+    button_2 = KeyboardButton(text='💼 Меню заказов 💼')
     button_3 = KeyboardButton(text='📄 Отчеты 📄')
     button_4 = KeyboardButton(text='👨‍💼 Персонал 👨‍💼')
     keyboard = ReplyKeyboardMarkup(
