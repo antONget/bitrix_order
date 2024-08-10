@@ -61,61 +61,6 @@ async def get_data_deal(id_deal: int) -> dict | bool | str:
     return order_dict
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# замените на ваш вебхук для доступа к Bitrix24
-# webhook = config.tg_bot.bitrix
-# bx = Bitrix(webhook)
-# deals = bx.get_all('crm.deal.list')
-# # Получите поля сделки
-# contacts = bx.get_by_ID(
-#     'crm.deal.contact.items.get',
-#     [print(d['ID']) for d in deals])
-# # Найдите ваше пользовательское поле
-# enum_field = fields['UF_CRM_1722889043533']  # Замените на ваше поле
-#
-# # Создайте соответствие значений и ID
-# value_to_id = {item['VALUE']: item['ID'] for item in enum_field['items']}
-#
-# # Пример значения, для которого нужно получить ID
-# value = "1 - 444"
-# id_value = value_to_id.get(value)
-#
-# if id_value is not None:
-#     print(f"ID для '{value}': {id_value}")
-# else:
-#     print(f"Значение '{value}' не найдено.")
-base = "{config.tg_bot.bitrix}/crm.deal.fields?id=30').json()['result']"
-deal = requests.get(f'{config.tg_bot.bitrix}/crm.deal.get?id=30').json()['result']
-for key in deal.keys():
-    if "UF_CRM" in key:
-        d = deal[key]
-        if 'items' in requests.get(f'{config.tg_bot.bitrix}/crm.deal.fields?id=30').json()['result'][key].keys():
-            title = requests.get(f'{config.tg_bot.bitrix}/crm.deal.fields?id=30').json()['result'][key]['listLabel']
-            list_ = requests.get(f'{config.tg_bot.bitrix}/crm.deal.fields?id=30').json()['result'][key]['items']
-            if list_:
-                for k in list_:
-                    if k['ID'] == str(d):
-                        pass
-                        # print(title, k["VALUE"])
-# data = {"UF_CRM": 1722889116033}
-# print(requests.get(f'{config.tg_bot.bitrix}/crm.deal.get?id=30&fields={data}').json())
-# # contact = requests.get(f'{config.tg_bot.bitrix}/crm.contact.get?id={deal["result"]["CONTACT_ID"]}').json()
-# # print(contact)
-
-# print(requests.get(f'{config.tg_bot.bitrix}/crm.deal.fields?id=30').json()['result']["UF_CRM_1722889776466"])
-
 if __name__ == '__main__':
     # id_deal = int(input('Пришлите номер заявки: '))
     asyncio.run(get_data_deal(id_deal=38))
