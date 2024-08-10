@@ -91,18 +91,48 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
-                                           f'<b>Клиент:</b>\n'
-                                           f'<i>Имя:</i> {name}\n'
-                                           f'<i>Телефон: {order.client_phone}</i>\n'
-                                           f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == rq.OrderStatus.cancel:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        elif status_order == rq.OrderStatus.work:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
     else:
         await callback.answer(text=f'У вас недостаточно прав для работы с этим функционалом. '
                                    f'Обратитесь к администратору.', show_alert=True)
@@ -148,18 +178,48 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
-                                           f'<b>Клиент:</b>\n'
-                                           f'<i>Имя:</i> {name}\n'
-                                           f'<i>Телефон: {order.client_phone}</i>\n'
-                                           f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == rq.OrderStatus.cancel:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        elif status_order == rq.OrderStatus.work:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
     except TelegramBadRequest:
         order = list_orders[num_block]
         name = ''
@@ -179,18 +239,48 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        await callback.message.answer(text=f'<b>Закaз № {order.id_bitrix}</b>\n\n'
-                                           f'<b>Клиент:</b>\n'
-                                           f'<i>Имя:</i> {name}\n'
-                                           f'<i>Телефон: {order.client_phone}</i>\n'
-                                           f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == rq.OrderStatus.cancel:
+            await callback.message.answer(text=f'<b>Зaкaз № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        elif status_order == rq.OrderStatus.work:
+            await callback.message.answer(text=f'<b>Зaкaз № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Закaз № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
 
 
 # <<
@@ -233,18 +323,48 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
-                                           f'<b>Клиент:</b>\n'
-                                           f'<i>Имя:</i> {name}\n'
-                                           f'<i>Телефон: {order.client_phone}</i>\n'
-                                           f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == rq.OrderStatus.cancel:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        elif status_order == rq.OrderStatus.work:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
     except TelegramBadRequest:
         order = list_orders[num_block]
         name = ''
@@ -264,18 +384,48 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-                                           f'<b>Клиент:</b>\n'
-                                           f'<i>Имя:</i> {name}\n'
-                                           f'<i>Телефон: {order.client_phone}</i>\n'
-                                           f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == rq.OrderStatus.cancel:
+            await callback.message.answer(text=f'<b>Зaкaз № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        elif status_order == rq.OrderStatus.work:
+            await callback.message.answer(text=f'<b>Зaкaз № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                               f'<i>Мастер:</i>'
+                                               f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                               f'tg_id{order.tg_executor}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Клиент:</b>\n'
+                                               f'<i>Имя:</i> {name}\n'
+                                               f'<i>Телефон: {order.client_phone}</i>\n'
+                                               f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
 
 
 @router.callback_query(F.data.startswith('detail_order_'))
@@ -376,18 +526,48 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
             address += f'Энгельс, {order.task_street}'
     if order.task_saratov_area != 'None':
         address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-    await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-                                       f'<b>Клиент:</b>\n'
-                                       f'<i>Имя:</i> {name}\n'
-                                       f'<i>Телефон: {order.client_phone}</i>\n'
-                                       f'<i>Адрес:</i> {address}\n\n'
-                                       f'<b>Заявка</b>\n'
-                                       f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                       f'<i>Детали работы:</i> {order.task_detail}\n'
-                                       f'<i>Оплата:</i> {order.task_pay}\n'
-                                       f'<i>Начало работ:</i> {order.task_begin}\n',
-                                  reply_markup=keyboard,
-                                  parse_mode='html')
+    if status_order == rq.OrderStatus.cancel:
+        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Клиент:</b>\n'
+                                           f'<i>Имя:</i> {name}\n'
+                                           f'<i>Телефон: {order.client_phone}</i>\n'
+                                           f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                           f'<i>Мастер:</i>'
+                                           f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                           f'tg_id{order.tg_executor}\n'
+                                           f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
+    elif status_order == rq.OrderStatus.work:
+        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Клиент:</b>\n'
+                                           f'<i>Имя:</i> {name}\n'
+                                           f'<i>Телефон: {order.client_phone}</i>\n'
+                                           f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n\n'
+                                           f'<i>Мастер:</i>'
+                                           f' @{(await rq.get_user_tg_id(order.tg_executor)).username}/'
+                                           f'tg_id{order.tg_executor}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
+    else:
+        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Клиент:</b>\n'
+                                           f'<i>Имя:</i> {name}\n'
+                                           f'<i>Телефон: {order.client_phone}</i>\n'
+                                           f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Оплата:</i> {order.task_pay}\n'
+                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
 
 
 @router.callback_query(F.data.startswith('set_complete_'))
@@ -521,18 +701,19 @@ async def search_order_id_bitrix(message: Message, state: FSMContext):
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        await message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-                                  f'<b>Клиент:</b>\n'
-                                  f'<i>Имя:</i> {name}\n'
-                                  f'<i>Телефон: {order.client_phone}</i>\n'
-                                  f'<i>Адрес:</i> {address}\n\n'
-                                  f'<b>Заявка</b>\n'
-                                  f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                  f'<i>Детали работы:</i> {order.task_detail}\n'
-                                  f'<i>Оплата:</i> {order.task_pay}\n'
-                                  f'<i>Начало работ:</i> {order.task_begin}\n',
+        text = f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+        if check_personal(tg_id=message.chat.id):
+            text += f'<b>Клиент:</b>\n<i>Имя:</i> {name}\n<i>Телефон: {order.client_phone}</i>\n'
+        text += f'<i>Адрес:</i> {address}\n\n<b>Заявка</b>\n<i>Тип работы:</i> {order.task_type_work}\n' \
+                f'<i>Детали работы:</i> {order.task_detail}\n\n'
+        if order.status in [rq.OrderStatus.cancel, rq.OrderStatus.work]:
+            if check_personal(tg_id=message.chat.id):
+                text += f'<i>Мастер:</i> @{(await rq.get_user_tg_id(order.tg_executor)).username}/' \
+                        f'tg_id{order.tg_executor}\n'
+        if order.status == rq.OrderStatus.cancel:
+            text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        await message.answer(text=text,
                              parse_mode='html')
-
     else:
         await message.answer(text=f'Заказ не найден!')
     await state.set_state(default_state)

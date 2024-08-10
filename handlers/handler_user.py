@@ -97,18 +97,29 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
             address += f'Энгельс, {order.task_street}'
     if order.task_saratov_area != 'None':
         address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-    await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-                                       # f'<b>Клиент:</b>\n'
-                                       # f'<i>Имя:</i> {name}\n'
-                                       # f'<i>Телефон: {order.client_phone}</i>\n'
-                                       # f'<i>Адрес:</i> {address}\n\n'
-                                       f'<b>Заявка</b>\n'
-                                       f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                       f'<i>Детали работы:</i> {order.task_detail}\n'
-                                       f'<i>Оплата:</i> {order.task_pay}\n'
-                                       f'<i>Начало работ:</i> {order.task_begin}\n',
-                                  reply_markup=keyboard,
-                                  parse_mode='html')
+    if status_order == 'cancel':
+        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Адрес:</i> {address}\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
+    else:
+        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+                                           # f'<b>Клиент:</b>\n'
+                                           # f'<i>Имя:</i> {name}\n'
+                                           # f'<i>Телефон: {order.client_phone}</i>\n'
+                                           # f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Адрес:</i> {address}\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Оплата:</i> {order.task_pay}\n'
+                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
 
 
 # >>
@@ -154,18 +165,29 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-        # f'<b>Клиент:</b>\n'
-        # f'<i>Имя:</i> {name}\n'
-        # f'<i>Телефон: {order.client_phone}</i>\n'
-        # f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == 'cancel':
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Адрес:</i> {address}\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+            # f'<b>Клиент:</b>\n'
+            # f'<i>Имя:</i> {name}\n'
+            # f'<i>Телефон: {order.client_phone}</i>\n'
+            # f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Адрес:</i> {address}\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
     except TelegramBadRequest:
         order = list_orders[num_block]
         name = ''
@@ -183,18 +205,29 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
-        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-        # f'<b>Клиент:</b>\n'
-        # f'<i>Имя:</i> {name}\n'
-        # f'<i>Телефон: {order.client_phone}</i>\n'
-        # f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Зaявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == 'cancel':
+            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Адрес:</i> {address}\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+            # f'<b>Клиент:</b>\n'
+            # f'<i>Имя:</i> {name}\n'
+            # f'<i>Телефон: {order.client_phone}</i>\n'
+            # f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Зaявка</b>\n'
+                                               f'<i>Адрес:</i> {address}\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
 
 
 # <<
@@ -238,18 +271,29 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
-        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-        # f'<b>Клиент:</b>\n'
-        # f'<i>Имя:</i> {name}\n'
-        # f'<i>Телефон: {order.client_phone}</i>\n'
-        # f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == 'cancel':
+            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Адрес:</i> {address}\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+            # f'<b>Клиент:</b>\n'
+            # f'<i>Имя:</i> {name}\n'
+            # f'<i>Телефон: {order.client_phone}</i>\n'
+            # f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Адрес:</i> {address}\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
     except TelegramBadRequest:
         order = list_orders[num_block]
         name = ''
@@ -269,18 +313,29 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-        # f'<b>Клиент:</b>\n'
-        # f'<i>Имя:</i> {name}\n'
-        # f'<i>Телефон: {order.client_phone}</i>\n'
-        # f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Зaявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+        if status_order == 'cancel':
+            await callback.message.answer(text=f'<b>Зaкaз № {order.id_bitrix}</b>\n\n'
+                                               f'<b>Заявка</b>\n'
+                                               f'<i>Адрес:</i> {address}\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
+        else:
+            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+            # f'<b>Клиент:</b>\n'
+            # f'<i>Имя:</i> {name}\n'
+            # f'<i>Телефон: {order.client_phone}</i>\n'
+            # f'<i>Адрес:</i> {address}\n\n'
+                                               f'<b>Зaявка</b>\n'
+                                               f'<i>Адрес:</i> {address}\n'
+                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                               f'<i>Детали работы:</i> {order.task_detail}\n'
+                                               f'<i>Оплата:</i> {order.task_pay}\n'
+                                               f'<i>Начало работ:</i> {order.task_begin}\n',
+                                          reply_markup=keyboard,
+                                          parse_mode='html')
 
 
 @router.callback_query(F.data.startswith('user_detail_order_'))
@@ -377,18 +432,29 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
             address += f'Энгельс, {order.task_street}'
     if order.task_saratov_area != 'None':
         address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-    await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-    # f'<b>Клиент:</b>\n'
-    # f'<i>Имя:</i> {name}\n'
-    # f'<i>Телефон: {order.client_phone}</i>\n'
-    # f'<i>Адрес:</i> {address}\n\n'
-                                       f'<b>Заявка</b>\n'
-                                       f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                       f'<i>Детали работы:</i> {order.task_detail}\n'
-                                       f'<i>Оплата:</i> {order.task_pay}\n'
-                                       f'<i>Начало работ:</i> {order.task_begin}\n',
-                                  reply_markup=keyboard,
-                                  parse_mode='html')
+    if status_order == 'cancel':
+        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Адрес:</i> {address}\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
+    else:
+        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
+        # f'<b>Клиент:</b>\n'
+        # f'<i>Имя:</i> {name}\n'
+        # f'<i>Телефон: {order.client_phone}</i>\n'
+        # f'<i>Адрес:</i> {address}\n\n'
+                                           f'<b>Заявка</b>\n'
+                                           f'<i>Адрес:</i> {address}\n'
+                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
+                                           f'<i>Детали работы:</i> {order.task_detail}\n'
+                                           f'<i>Оплата:</i> {order.task_pay}\n'
+                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
 
 
 @router.callback_query(F.data.startswith('set_work_'))
