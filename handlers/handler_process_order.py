@@ -80,16 +80,16 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
         address = ''
         if order.task_saratov != 'None':
             if 'город' not in order.task_saratov:
-                address += f'Саратов, {order.task_saratov}, {order.task_street}'
+                address += f'Саратов, {order.task_saratov}, {order.task_street.split("|")[0]}'
             else:
                 address += f'Саратов, {order.task_street}'
         if order.task_engels != 'None':
             if 'город' not in order.task_engels:
-                address += f'Энгельс, {order.task_engels}, {order.task_street}'
+                address += f'Энгельс, {order.task_engels}, {order.task_street.split("|")[0]}'
             else:
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
-            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
+            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street.split("|")[0]}'
         # Формируем карточку заказа
         message_text = ''
         status_order_text = ''
@@ -103,7 +103,7 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
             status_order_text = '✅ Выполненный ✅'
         elif status_order == rq.OrderStatus.unclaimed:
             status_order_text = '🔕 Невостребованный 🔕'
-        message_text += f'{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
+        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
                         f'<b>Клиент:</b>\n' \
                         f'<i>Имя:</i> {name}\n' \
                         f'<i>Телефон: {order.client_phone}</i>\n' \
