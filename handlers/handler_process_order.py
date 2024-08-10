@@ -680,7 +680,12 @@ async def search_order_id_bitrix(message: Message, state: FSMContext):
     :param state:
     :return: 
     """
-    bitrix_id = int(message.text)
+    try:
+        bitrix_id = int(message.text)
+    except ValueError:
+        await message.answer(text='ID заказа должно быть целым числом!')
+        await state.set_state(default_state)
+        return
     order = await rq.get_order_bitrix_id(bitrix_id=bitrix_id)
     if order:
 

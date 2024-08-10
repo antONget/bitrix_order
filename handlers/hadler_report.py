@@ -87,3 +87,4 @@ async def process_simple_calendar_finish(callback: CallbackQuery, callback_data:
         await get_report()
         file_path = "list_report.xlsx"
         await callback.message.answer_document(FSInputFile(file_path))
+    await state.set_state(default_state)
