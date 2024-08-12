@@ -39,13 +39,12 @@ async def process_start_command(message: Message, state: FSMContext) -> None:
     await state.set_state(default_state)
     # добавляем администратора
     if check_super_admin(telegram_id=message.chat.id):
-        data = {"token": "admin", "tg_id": message.chat.id, "username": message.from_user.username,
-                "role": rq.UserRole.admin, "is_admin": 1}
+        data = {"token": "admin", "tg_id": message.chat.id, "username": message.from_user.username, "is_admin": 1}
         await rq.add_admin(data=data)
     # есть ли пользователь в таблице
     if await rq.get_user_tg_id(tg_id=message.chat.id):
         # относится к администратору
-        if await check_super_admin(telegram_id=message.chat.id):
+        if check_super_admin(telegram_id=message.chat.id):
             await message.answer(text=f'Я бот MasterClass. Рад с вами работать. 👋',
                                  reply_markup=kb.keyboards_main())
         # относится к персоналу
@@ -143,11 +142,11 @@ async def add_task(message: Message, state: FSMContext) -> None:
             "client_last_name": order_dict['Отчество']['LAST_NAME'],
             "client_phone": order_dict["Телефон"]["PHONE"],
             "task_type_work": order_dict["Тип работы"]["UF_CRM_1722889585844"],
-            "task_detail": order_dict["Детали работы:"]["UF_CRM_1722856992199"],
+            "task_detail": order_dict["Детали работы:"]["UF_CRM_1723401519885"],
             "task_saratov_area": order_dict["Саратовская область "]["UF_CRM_1723096401639"],
-            "task_saratov": order_dict["Саратов"]["UF_CRM_1722889776466"],
+            "task_saratov": order_dict["Саратов"]["UF_CRM_1723401598955"],
             "task_engels": order_dict["Энгельс"]["UF_CRM_1722889900952"],
-            "task_street": order_dict["Улица"]["UF_CRM_1722889043533"],
+            "task_street": order_dict["Улица"]["UF_CRM_1722889043533"].split('|')[0],
             "task_pay": order_dict["Оплата"]["UF_CRM_1722890070498"],
             "task_begin": order_dict["Начало работ "]["UF_CRM_1722890021769"]}
     await rq.add_order(data=data, id_bitrix=id_bitrix)

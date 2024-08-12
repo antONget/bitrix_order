@@ -19,7 +19,10 @@ class User(Base):
     token: Mapped[str] = mapped_column(String(20))
     tg_id = mapped_column(BigInteger, default=0)
     username: Mapped[str] = mapped_column(String(20), default='username')
-    role: Mapped[str] = mapped_column(String(200), default='user')
+    is_admin: Mapped[int] = mapped_column(Integer, default=0)
+    is_manager: Mapped[int] = mapped_column(Integer, default=0)
+    is_dispatcher: Mapped[int] = mapped_column(Integer, default=0)
+    is_ban: Mapped[int] = mapped_column(Integer, default=0)
     balance: Mapped[float] = mapped_column(Float, default=0)
 
 

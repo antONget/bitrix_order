@@ -61,7 +61,7 @@ async def process_select_action(callback: CallbackQuery, state: FSMContext) -> N
     logging.info(f'process_add_admin: {callback.message.chat.id}')
     edit_role = callback.data.split('_')[2]
     role = 'менеджера'
-    if edit_role == 'dispatcher':
+    if edit_role == rq.UserRole.dispatcher:
         role = 'диспетчера'
     await state.update_data(edit_role=edit_role)
     await callback.message.edit_text(text=f"Добавить или удалить {role}?",
@@ -134,98 +134,6 @@ async def get_id_tg_personal(message: Message, state: FSMContext):
     else:
         await message.answer(text=f'Пользователь c id={tg_id_ban} в базе данных не найден')
     await state.set_state(default_state)
-#     print(edit_role)
-#     list_users = await rq.get_users_role_not(role=edit_role)
-#     list_personal = []
-#     for user in list_users:
-#         list_personal.append([user.tg_id, user.username])
-#     keyboard = kb.keyboards_add_admin(list_personal, 0, 2, 6)
-#     await callback.message.edit_text(text=f'Выберите пользователя, которого нужно сделать {role}',
-#                                      reply_markup=keyboard)
-#     await callback.answer()
-#
-#
-# # >>>>
-# @router.callback_query(F.data.startswith('admin_forward_'))
-# async def process_forward_admin(callback: CallbackQuery, state: FSMContext) -> None:
-#     """
-#     Пагинация вперед
-#     :param callback:
-#     :param state:
-#     :return:
-#     """
-#     logging.info(f'process_forward_admin: {callback.message.chat.id}')
-#     data = await state.get_data()
-#     edit_role = data['edit_role']
-#     role = 'менеджером'
-#     if edit_role == 'dispatcher':
-#         role = 'диспетчером'
-#     list_users = await rq.get_users_role_not(role=edit_role)
-#     list_personal = []
-#     for user in list_users:
-#         list_personal.append([user.tg_id, user.username])
-#     forward = int(callback.data.split('_')[2]) + 1
-#     back = forward - 2
-#     keyboard = kb.keyboards_add_admin(list_personal, back, forward, 6)
-#     try:
-#         await callback.message.edit_text(text=f'Выберите пользователя, которого вы хотите сделать {role}',
-#                                          reply_markup=keyboard)
-#     except TelegramBadRequest:
-#         await callback.message.edit_text(text=f'Выберите пользователя, которого нужно сделать {role}',
-#                                          reply_markup=keyboard)
-#
-#
-# # <<<<
-# @router.callback_query(F.data.startswith('admin_back_'))
-# async def process_back_admin(callback: CallbackQuery, state: FSMContext) -> None:
-#     """
-#     Пагинация назад
-#     :param callback:
-#     :param state:
-#     :return:
-#     """
-#     logging.info(f'process_back_admin: {callback.message.chat.id}')
-#     data = await state.get_data()
-#     edit_role = data['edit_role']
-#     role = 'менеджером'
-#     if edit_role == 'dispatcher':
-#         role = 'диспетчером'
-#
-#     list_users = await rq.get_users_role_not(role=edit_role)
-#     list_personal = []
-#     for user in list_users:
-#         list_personal.append([user.tg_id, user.username])
-#     back = int(callback.data.split('_')[2]) - 1
-#     forward = back + 2
-#     keyboard = kb.keyboards_add_admin(list_personal, back, forward, 6)
-#     try:
-#         await callback.message.edit_text(text=f'Выберите пользователя, которого вы хотите сделать {role}',
-#                                          reply_markup=keyboard)
-#     except TelegramBadRequest:
-#         await callback.message.edit_text(text=f'Выберите пользователя, которого нужно сделать {role}',
-#                                          reply_markup=keyboard)
-#
-#
-# # подтверждение добавления пользователя в список администраторов
-# @router.callback_query(F.data.startswith('admin_add_'))
-# async def process_admin_add(callback: CallbackQuery, state: FSMContext) -> None:
-#     """
-#     Запрос на подтверждение добавление персонала
-#     :param callback:
-#     :param state:
-#     :return:
-#     """
-#     logging.info(f'process_admin_add: {callback.message.chat.id}')
-#     telegram_id = int(callback.data.split('_')[2])
-#     user_info = await rq.get_user_tg_id(tg_id=telegram_id)
-#     data = await state.get_data()
-#     edit_role = data['edit_role']
-#     role = 'менеджером'
-#     if edit_role == 'dispatcher':
-#         role = 'диспетчером'
-#     await state.update_data(add_personal=telegram_id)
-#     await callback.message.edit_text(text=f'Сделать пользователя {user_info.username} {role}',
-#                                      reply_markup=kb.keyboard_add_list_personal())
 
 
 # отмена добавления пользователя в список администраторов
@@ -259,7 +167,7 @@ async def process_add_admin_list(callback: CallbackQuery, state: FSMContext, bot
     edit_role = data['edit_role']
     tg_id = data['add_personal']
     role = 'менеджером'
-    if edit_role == 'dispatcher':
+    if edit_role == rq.UserRole.dispatcher:
         role = 'диспетчером'
     await rq.set_user_role(tg_id=tg_id, role=edit_role)
     await callback.answer(text=f'Пользователь успешно назначен {role}', show_alert=True)
@@ -347,7 +255,7 @@ async def process_delete_user(callback: CallbackQuery, state: FSMContext) -> Non
     data = await state.get_data()
     edit_role = data['edit_role']
     role = 'менеджеров'
-    if edit_role == 'dispatcher':
+    if edit_role == rq.UserRole.dispatcher:
         role = 'диспетчеров'
     telegram_id = int(callback.data.split('_')[2])
     user_info = await rq.get_user_tg_id(tg_id=telegram_id)
@@ -382,7 +290,7 @@ async def process_del_personal_list(callback: CallbackQuery, state: FSMContext, 
     role = 'менеджеров'
     if edit_role == 'dispatcher':
         role = 'диспетчеров'
-    await rq.set_user_role(tg_id=tg_id, role=rq.UserRole.user)
+    await rq.set_user_role(tg_id=tg_id, role=rq.UserRole.user, change_role=edit_role)
     await callback.answer(text=f'Пользователь успешно удален из {role}', show_alert=True)
     await asyncio.sleep(1)
     await process_change_list_personal(callback.message)

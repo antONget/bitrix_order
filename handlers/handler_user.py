@@ -465,11 +465,9 @@ async def process_set_order_work(callback: CallbackQuery) -> None:
     :return:
     """
     logging.info(f'process_set_order_work')
-    models_orders = await rq.get_order_idtg_and_status(tg_id=callback.message.chat.id,
-                                                       status=rq.OrderStatus.new)
-    list_orders = []
-    for order in models_orders:
-        list_orders.append(order)
+    list_orders = [order for order in await rq.get_order_idtg_and_status(tg_id=callback.message.chat.id,
+                                                                         status=rq.OrderStatus.work)]
+
     count_block = len(list_orders)
     if count_block >= 3:
         await callback.answer(text=f'У вас в работе находится 3 заказа, вы не можете брать более 3х заказов'
@@ -509,7 +507,8 @@ async def process_set_order_work(callback: CallbackQuery) -> None:
                                            f'<i>Тип работы:</i> {order.task_type_work}\n'
                                            f'<i>Детали работы:</i> {order.task_detail}\n'
                                            f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
+                                           f'<i>Начало работ:</i> {order.task_begin}\n\n'
+                                           f'Заказов в работе {count_block}/3',
                                       parse_mode='html')
     await callback.answer()
 
@@ -563,6 +562,7 @@ async def get_details_order(message: Message, state: FSMContext):
             detail_text = order.order_detail_text
             detail_text += f'{message.text}\n'
             await rq.set_order_detail_text(id_order=id_order, detail_text=detail_text)
+
     elif message.photo:
         order = await rq.get_order_id(id_order=id_order)
         if order.order_detail_photo == "None":
