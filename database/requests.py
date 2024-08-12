@@ -75,7 +75,10 @@ async def get_users_role(role: str) -> list[User]:
     """
     logging.info(f'get_users_role')
     async with async_session() as session:
-        users = await session.scalars(select(User).where(User.role == role))
+        if role == UserRole.manager:
+            users = await session.scalars(select(User).where(User.is_manager == 1))
+        elif role == UserRole.dispatcher:
+            users = await session.scalars(select(User).where(User.is_dispatcher == 1))
         return users
 
 
