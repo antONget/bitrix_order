@@ -195,7 +195,7 @@ async def process_del_admin(callback: CallbackQuery, state: FSMContext) -> None:
     for user in list_users:
         list_personal.append([user.tg_id, user.username])
     if not list_personal:
-        await callback.message.answer(text=f'Нет пользователей для удаления из списка {role}')
+        await callback.answer(text=f'Нет пользователей для удаления из списка {role}', show_alert=True)
         return
     keyboard = kb.keyboards_del_admin(list_personal, 0, 2, 6)
     await callback.message.edit_text(text=f'Выберите пользователя, которого нужно удалить из {role}',
