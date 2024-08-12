@@ -646,6 +646,7 @@ async def process_set_order_cancel(callback: CallbackQuery, state: FSMContext) -
     logging.info(f'process_set_order_work')
     await callback.message.answer(text=f'Напишите причину отказа.')
     await state.set_state(UserOrder.reason_of_refusal)
+    await callback.answer()
 
 
 @router.message(F.text, StateFilter(UserOrder.reason_of_refusal))
@@ -663,14 +664,14 @@ async def get_reason_of_refusal(message: Message, state: FSMContext, bot: Bot):
     info_order = await rq.get_order_id(id_order=id_order)
     await rq.set_order_reason_of_refusal(id_order=id_order, refusal=message.text)
     await rq.set_order_status(id_order=id_order, status=rq.OrderStatus.cancel)
-    await message.answer(text=f'Заказ {id_order} помечен как "Отменен". Информация передана диспетчеру.')
+    await message.answer(text=f'Заказ № {info_order.id_bitrix} помечен как "Отменен". Информация передана диспетчеру.')
     dispatchers = await rq.get_users_role(role=rq.UserRole.dispatcher)
     if dispatchers:
         for dispatcher in dispatchers:
             try:
                 await bot.send_message(chat_id=dispatcher.tg_id,
                                        text=f'Пользователь @{message.from_user.username}'
-                                            f' перевел заказ {info_order.id_bitrix} в статус "Отменен".\n'
+                                            f' перевел заказ № {info_order.id_bitrix} в статус "Отменен".\n'
                                             f'Причина: {message.text}')
             except TelegramBadRequest:
                 pass
@@ -678,7 +679,7 @@ async def get_reason_of_refusal(message: Message, state: FSMContext, bot: Bot):
         try:
             await bot.send_message(chat_id=int(admin),
                                    text=f'Пользователь @{message.from_user.username}'
-                                        f' перевел заказ {info_order.id_bitrix} в статус "Отменен".\n'
+                                        f' перевел заказ № {info_order.id_bitrix} в статус "Отменен".\n'
                                         f'Причина: {message.text}')
         except:
             pass
@@ -698,20 +699,20 @@ async def process_set_order_complete(callback: CallbackQuery, state: FSMContext,
     data = await state.get_data()
     id_order = data['id_order']
     info_order = await rq.get_order_id(id_order=id_order)
-    await callback.message.answer(text=f'Заказ {id_order} помечен как выполненный. Информация передана менеджеру')
+    await callback.message.answer(text=f'Заказ № {info_order.id_bitrix} помечен как выполненный. Информация передана менеджеру')
     managers = await rq.get_users_role(role=rq.UserRole.manager)
     if managers:
         for manager in managers:
             try:
                 await bot.send_message(chat_id=manager.tg_id,
                                        text=f'Пользователь @{callback.from_user.username}'
-                                            f' завершил заказ {info_order.id_bitrix}')
+                                            f' завершил заказ № {info_order.id_bitrix}')
             except TelegramBadRequest:
                 pass
     for admin in config.tg_bot.admin_ids.split(','):
         try:
             await bot.send_message(chat_id=int(admin),
                                    text=f'Пользователь @{callback.from_user.username}'
-                                        f' завершил заказ {info_order.id_bitrix}')
+                                        f' завершил заказ № {info_order.id_bitrix}')
         except:
             pass
