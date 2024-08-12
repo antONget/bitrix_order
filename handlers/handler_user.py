@@ -119,6 +119,7 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(text=message_text,
                                   reply_markup=keyboard,
                                   parse_mode='html')
+    await callback.answer()
 
 
 # >>
@@ -225,6 +226,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer(text=message_text,
                                       reply_markup=keyboard,
                                       parse_mode='html')
+    await callback.answer()
 
 
 # <<
@@ -331,6 +333,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
         await callback.message.answer(text=message_text,
                                       reply_markup=keyboard,
                                       parse_mode='html')
+    await callback.answer()
 
 
 @router.callback_query(F.data.startswith('user_detail_order_'))
@@ -449,6 +452,7 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
     await callback.message.answer(text=message_text,
                                   reply_markup=keyboard,
                                   parse_mode='html')
+    await callback.answer()
 
 
 @router.callback_query(F.data.startswith('set_work_'))
@@ -627,6 +631,7 @@ async def process_add_not_more_detail(callback: CallbackQuery, state: FSMContext
     logging.info('process_add_more_detail')
     await callback.answer(text=f'Все материалы успешно добавлены', show_alert=True)
     await state.set_state(default_state)
+    await callback.answer()
 
 
 @router.callback_query(F.data == 'set_status_cancel')
@@ -710,3 +715,4 @@ async def process_set_order_complete(callback: CallbackQuery, state: FSMContext,
                                         f' завершил заказ № {info_order.id_bitrix}')
         except:
             pass
+    await callback.answer()
