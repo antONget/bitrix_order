@@ -150,7 +150,7 @@ async def add_task(message: Message, state: FSMContext) -> None:
             "task_street": order_dict["Улица"]["UF_CRM_1722889043533"],
             "task_pay": order_dict["Оплата"]["UF_CRM_1722890070498"],
             "task_begin": order_dict["Начало работ "]["UF_CRM_1722890021769"]}
-    await rq.add_order(data=data)
+    await rq.add_order(data=data, id_bitrix=id_bitrix)
 
     order = await rq.get_order_bitrix_id(bitrix_id=id_bitrix)
     name = ''
