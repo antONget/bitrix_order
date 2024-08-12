@@ -570,6 +570,13 @@ async def get_details_order(message: Message, state: FSMContext, bot: Bot):
                                             f' к заказу № {order.id_bitrix}')
             except:
                 pass
+        for admin in config.tg_bot.admin_ids.split(','):
+            try:
+                await bot.send_message(chat_id=int(admin),
+                                       text=f'Мастер @{message.from_user.username} оставил текстовый комментарий'
+                                            f' к заказу № {order.id_bitrix}')
+            except:
+                pass
 
     elif message.photo:
         order = await rq.get_order_id(id_order=id_order)
@@ -584,6 +591,13 @@ async def get_details_order(message: Message, state: FSMContext, bot: Bot):
         for manager in list_manager:
             try:
                 await bot.send_message(chat_id=manager.tg_id,
+                                       text=f'Мастер @{message.from_user.username} оставил фотоматериал'
+                                            f' к заказу № {order.id_bitrix}')
+            except:
+                pass
+        for admin in config.tg_bot.admin_ids.split(','):
+            try:
+                await bot.send_message(chat_id=int(admin),
                                        text=f'Мастер @{message.from_user.username} оставил фотоматериал'
                                             f' к заказу № {order.id_bitrix}')
             except:
@@ -646,6 +660,7 @@ async def get_reason_of_refusal(message: Message, state: FSMContext, bot: Bot):
     logging.info(f'get_reason_of_refusal')
     data = await state.get_data()
     id_order = data['id_order']
+    info_order = await rq.get_order_id(id_order=id_order)
     await rq.set_order_reason_of_refusal(id_order=id_order, refusal=message.text)
     await rq.set_order_status(id_order=id_order, status=rq.OrderStatus.cancel)
     await message.answer(text=f'Заказ {id_order} помечен как "Отменен". Информация передана диспетчеру.')
@@ -655,10 +670,18 @@ async def get_reason_of_refusal(message: Message, state: FSMContext, bot: Bot):
             try:
                 await bot.send_message(chat_id=dispatcher.tg_id,
                                        text=f'Пользователь @{message.from_user.username}'
-                                            f' перевел заказ {id_order} в статус "Отменен".\n'
+                                            f' перевел заказ {info_order.id_bitrix} в статус "Отменен".\n'
                                             f'Причина: {message.text}')
             except TelegramBadRequest:
                 pass
+    for admin in config.tg_bot.admin_ids.split(','):
+        try:
+            await bot.send_message(chat_id=int(admin),
+                                   text=f'Пользователь @{message.from_user.username}'
+                                        f' перевел заказ {info_order.id_bitrix} в статус "Отменен".\n'
+                                        f'Причина: {message.text}')
+        except:
+            pass
     await state.set_state(default_state)
 
 
@@ -685,3 +708,10 @@ async def process_set_order_complete(callback: CallbackQuery, state: FSMContext,
                                             f' завершил заказ {info_order.id_bitrix}')
             except TelegramBadRequest:
                 pass
+    for admin in config.tg_bot.admin_ids.split(','):
+        try:
+            await bot.send_message(chat_id=int(admin),
+                                   text=f'Пользователь @{callback.from_user.username}'
+                                        f' завершил заказ {info_order.id_bitrix}')
+        except:
+            pass
