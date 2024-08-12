@@ -123,7 +123,7 @@ async def add_task(message: Message, state: FSMContext) -> None:
     if await rq.get_order_bitrix_id(bitrix_id=id_bitrix):
         await message.answer('Заказ с таким ID уже добавлен в базу данных')
         await state.set_state(default_state)
-        return
+        # return
     await message.answer(text='Запрос отправлен в bitrix...')
     order_dict: dict = await get_data_deal(id_deal=id_bitrix)
     if order_dict == 'No_deal':
