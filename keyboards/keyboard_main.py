@@ -36,8 +36,8 @@ def keyboards_main_user() -> ReplyKeyboardMarkup:
     :return:
     """
     logging.info("keyboards_main")
-    button_1 = KeyboardButton(text='Мои заказы')
-    button_2 = KeyboardButton(text='Баланс')
+    button_1 = KeyboardButton(text='💼 Меню заказов 💼')
+    button_2 = KeyboardButton(text='💰 Баланс 💰')
     keyboard = ReplyKeyboardMarkup(
         keyboard=[[button_1], [button_2]],
         resize_keyboard=True

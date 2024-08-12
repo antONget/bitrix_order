@@ -7,7 +7,7 @@ from aiogram.exceptions import TelegramBadRequest
 
 import keyboards.keyboard_process_order as kb
 import database.requests as rq
-from filter.admin_filter import check_personal
+from filter.admin_filter import check_personal, IsPersonal
 from config_data.config import Config, load_config
 
 
@@ -25,7 +25,7 @@ class OrderPersonal(StatesGroup):
 
 
 # Персонал
-@router.message(F.text == '💼 Меню заказов 💼')
+@router.message(F.text == '💼 Меню заказов 💼', IsPersonal())
 async def process_order_list(message: Message) -> None:
     """
     Выбор статуса заказа для его обработки
@@ -230,7 +230,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                             f'<i>Имя:</i> {name}\n' \
                             f'<i>Телефон: {order.client_phone}</i>\n' \
                             f'<i>Адрес:</i> {address}\n\n' \
-                            f'<b>Заявка</b>\n' \
+                            f'<b>Зaявка</b>\n' \
                             f'<i>Тип работы:</i> {order.task_type_work}\n' \
                             f'<i>Детали работы:</i> {order.task_detail}\n\n'
             if status_order in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:
@@ -350,7 +350,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                             f'<i>Имя:</i> {name}\n' \
                             f'<i>Телефон: {order.client_phone}</i>\n' \
                             f'<i>Адрес:</i> {address}\n\n' \
-                            f'<b>Заявка</b>\n' \
+                            f'<b>Зaявка</b>\n' \
                             f'<i>Тип работы:</i> {order.task_type_work}\n' \
                             f'<i>Детали работы:</i> {order.task_detail}\n\n'
             if status_order in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:

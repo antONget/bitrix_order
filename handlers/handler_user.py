@@ -23,7 +23,7 @@ class UserOrder(StatesGroup):
     add_detail = State()
 
 
-@router.message(F.text == 'Баланс')
+@router.message(F.text == '💰 Баланс 💰')
 async def get_balance_user(message: Message) -> None:
     """
     Получаем стоимость завершенных пользователем заказов
@@ -43,7 +43,7 @@ async def get_balance_user(message: Message) -> None:
         await message.answer(text=f'Вы не завершили еще ни одного заказа')
 
 
-@router.message(F.text == 'Мои заказы')
+@router.message(F.text == '💼 Меню заказов 💼')
 async def get_balance_user(message: Message) -> None:
     """
     Получаем заказы для исполнителя
@@ -97,29 +97,28 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
             address += f'Энгельс, {order.task_street}'
     if order.task_saratov_area != 'None':
         address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-    if status_order == 'cancel':
-        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Адрес:</i> {address}\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
-    else:
-        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-                                           # f'<b>Клиент:</b>\n'
-                                           # f'<i>Имя:</i> {name}\n'
-                                           # f'<i>Телефон: {order.client_phone}</i>\n'
-                                           # f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Адрес:</i> {address}\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+    status_order_text = ''
+    message_text = ''
+    if status_order == rq.OrderStatus.new:
+        status_order_text = '🔔 Новый 🔔'
+    elif status_order == rq.OrderStatus.cancel:
+        status_order_text = '🚫 Отмененный 🚫'
+    elif status_order == rq.OrderStatus.work:
+        status_order_text = '🛠 В работе 🛠'
+    elif status_order == rq.OrderStatus.complete:
+        status_order_text = '✅ Выполненный ✅'
+    elif status_order == rq.OrderStatus.unclaimed:
+        status_order_text = '🔕 Невостребованный 🔕'
+    message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
+                    f'<b>Заявка</b>\n' \
+                    f'<i>Адрес:</i> {address}\n' \
+                    f'<i>Тип работы:</i> {order.task_type_work}\n' \
+                    f'<i>Детали работы:</i> {order.task_detail}\n'
+    if status_order == rq.OrderStatus.cancel:
+        message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+    await callback.message.answer(text=message_text,
+                                  reply_markup=keyboard,
+                                  parse_mode='html')
 
 
 # >>
@@ -165,29 +164,28 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        if status_order == 'cancel':
-            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
-                                               f'<b>Заявка</b>\n'
-                                               f'<i>Адрес:</i> {address}\n'
-                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                               f'<i>Детали работы:</i> {order.task_detail}\n'
-                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
-                                          reply_markup=keyboard,
-                                          parse_mode='html')
-        else:
-            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-            # f'<b>Клиент:</b>\n'
-            # f'<i>Имя:</i> {name}\n'
-            # f'<i>Телефон: {order.client_phone}</i>\n'
-            # f'<i>Адрес:</i> {address}\n\n'
-                                               f'<b>Заявка</b>\n'
-                                               f'<i>Адрес:</i> {address}\n'
-                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                               f'<i>Детали работы:</i> {order.task_detail}\n'
-                                               f'<i>Оплата:</i> {order.task_pay}\n'
-                                               f'<i>Начало работ:</i> {order.task_begin}\n',
-                                          reply_markup=keyboard,
-                                          parse_mode='html')
+        status_order_text = ''
+        message_text = ''
+        if status_order == rq.OrderStatus.new:
+            status_order_text = '🔔 Новый 🔔'
+        elif status_order == rq.OrderStatus.cancel:
+            status_order_text = '🚫 Отмененный 🚫'
+        elif status_order == rq.OrderStatus.work:
+            status_order_text = '🛠 В работе 🛠'
+        elif status_order == rq.OrderStatus.complete:
+            status_order_text = '✅ Выполненный ✅'
+        elif status_order == rq.OrderStatus.unclaimed:
+            status_order_text = '🔕 Невостребованный 🔕'
+        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
+                        f'<b>Заявка</b>\n' \
+                        f'<i>Адрес:</i> {address}\n' \
+                        f'<i>Тип работы:</i> {order.task_type_work}\n' \
+                        f'<i>Детали работы:</i> {order.task_detail}\n'
+        if status_order == rq.OrderStatus.cancel:
+            message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        await callback.message.answer(text=message_text,
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
     except TelegramBadRequest:
         order = list_orders[num_block]
         name = ''
@@ -205,29 +203,28 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
-        if status_order == 'cancel':
-            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-                                               f'<b>Заявка</b>\n'
-                                               f'<i>Адрес:</i> {address}\n'
-                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                               f'<i>Детали работы:</i> {order.task_detail}\n'
-                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
-                                          reply_markup=keyboard,
-                                          parse_mode='html')
-        else:
-            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-            # f'<b>Клиент:</b>\n'
-            # f'<i>Имя:</i> {name}\n'
-            # f'<i>Телефон: {order.client_phone}</i>\n'
-            # f'<i>Адрес:</i> {address}\n\n'
-                                               f'<b>Зaявка</b>\n'
-                                               f'<i>Адрес:</i> {address}\n'
-                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                               f'<i>Детали работы:</i> {order.task_detail}\n'
-                                               f'<i>Оплата:</i> {order.task_pay}\n'
-                                               f'<i>Начало работ:</i> {order.task_begin}\n',
-                                          reply_markup=keyboard,
-                                          parse_mode='html')
+        status_order_text = ''
+        message_text = ''
+        if status_order == rq.OrderStatus.new:
+            status_order_text = '🔔 Новый 🔔'
+        elif status_order == rq.OrderStatus.cancel:
+            status_order_text = '🚫 Отмененный 🚫'
+        elif status_order == rq.OrderStatus.work:
+            status_order_text = '🛠 В работе 🛠'
+        elif status_order == rq.OrderStatus.complete:
+            status_order_text = '✅ Выполненный ✅'
+        elif status_order == rq.OrderStatus.unclaimed:
+            status_order_text = '🔕 Невостребованный 🔕'
+        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
+                        f'<b>Зaявка</b>\n' \
+                        f'<i>Адрес:</i> {address}\n' \
+                        f'<i>Тип работы:</i> {order.task_type_work}\n' \
+                        f'<i>Детали работы:</i> {order.task_detail}\n'
+        if status_order == rq.OrderStatus.cancel:
+            message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        await callback.message.answer(text=message_text,
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
 
 
 # <<
@@ -271,29 +268,28 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                 address += f'Энгельс, {order.task_engels}, {order.task_street}'
             else:
                 address += f'Энгельс, {order.task_street}'
-        if status_order == 'cancel':
-            await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
-                                               f'<b>Заявка</b>\n'
-                                               f'<i>Адрес:</i> {address}\n'
-                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                               f'<i>Детали работы:</i> {order.task_detail}\n'
-                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
-                                          reply_markup=keyboard,
-                                          parse_mode='html')
-        else:
-            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-            # f'<b>Клиент:</b>\n'
-            # f'<i>Имя:</i> {name}\n'
-            # f'<i>Телефон: {order.client_phone}</i>\n'
-            # f'<i>Адрес:</i> {address}\n\n'
-                                               f'<b>Заявка</b>\n'
-                                               f'<i>Адрес:</i> {address}\n'
-                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                               f'<i>Детали работы:</i> {order.task_detail}\n'
-                                               f'<i>Оплата:</i> {order.task_pay}\n'
-                                               f'<i>Начало работ:</i> {order.task_begin}\n',
-                                          reply_markup=keyboard,
-                                          parse_mode='html')
+        status_order_text = ''
+        message_text = ''
+        if status_order == rq.OrderStatus.new:
+            status_order_text = '🔔 Новый 🔔'
+        elif status_order == rq.OrderStatus.cancel:
+            status_order_text = '🚫 Отмененный 🚫'
+        elif status_order == rq.OrderStatus.work:
+            status_order_text = '🛠 В работе 🛠'
+        elif status_order == rq.OrderStatus.complete:
+            status_order_text = '✅ Выполненный ✅'
+        elif status_order == rq.OrderStatus.unclaimed:
+            status_order_text = '🔕 Невостребованный 🔕'
+        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
+                        f'<b>Заявка</b>\n' \
+                        f'<i>Адрес:</i> {address}\n' \
+                        f'<i>Тип работы:</i> {order.task_type_work}\n' \
+                        f'<i>Детали работы:</i> {order.task_detail}\n'
+        if status_order == rq.OrderStatus.cancel:
+            message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        await callback.message.answer(text=message_text,
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
     except TelegramBadRequest:
         order = list_orders[num_block]
         name = ''
@@ -313,29 +309,28 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
                 address += f'Энгельс, {order.task_street}'
         if order.task_saratov_area != 'None':
             address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-        if status_order == 'cancel':
-            await callback.message.answer(text=f'<b>Зaкaз № {order.id_bitrix}</b>\n\n'
-                                               f'<b>Заявка</b>\n'
-                                               f'<i>Адрес:</i> {address}\n'
-                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                               f'<i>Детали работы:</i> {order.task_detail}\n'
-                                               f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
-                                          reply_markup=keyboard,
-                                          parse_mode='html')
-        else:
-            await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-            # f'<b>Клиент:</b>\n'
-            # f'<i>Имя:</i> {name}\n'
-            # f'<i>Телефон: {order.client_phone}</i>\n'
-            # f'<i>Адрес:</i> {address}\n\n'
-                                               f'<b>Зaявка</b>\n'
-                                               f'<i>Адрес:</i> {address}\n'
-                                               f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                               f'<i>Детали работы:</i> {order.task_detail}\n'
-                                               f'<i>Оплата:</i> {order.task_pay}\n'
-                                               f'<i>Начало работ:</i> {order.task_begin}\n',
-                                          reply_markup=keyboard,
-                                          parse_mode='html')
+        status_order_text = ''
+        message_text = ''
+        if status_order == rq.OrderStatus.new:
+            status_order_text = '🔔 Новый 🔔'
+        elif status_order == rq.OrderStatus.cancel:
+            status_order_text = '🚫 Отмененный 🚫'
+        elif status_order == rq.OrderStatus.work:
+            status_order_text = '🛠 В работе 🛠'
+        elif status_order == rq.OrderStatus.complete:
+            status_order_text = '✅ Выполненный ✅'
+        elif status_order == rq.OrderStatus.unclaimed:
+            status_order_text = '🔕 Невостребованный 🔕'
+        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
+                        f'<b>Зaявка</b>\n' \
+                        f'<i>Адрес:</i> {address}\n' \
+                        f'<i>Тип работы:</i> {order.task_type_work}\n' \
+                        f'<i>Детали работы:</i> {order.task_detail}\n'
+        if status_order == rq.OrderStatus.cancel:
+            message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        await callback.message.answer(text=message_text,
+                                      reply_markup=keyboard,
+                                      parse_mode='html')
 
 
 @router.callback_query(F.data.startswith('user_detail_order_'))
@@ -432,29 +427,28 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
             address += f'Энгельс, {order.task_street}'
     if order.task_saratov_area != 'None':
         address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
-    if status_order == 'cancel':
-        await callback.message.answer(text=f'<b>Заказ № {order.id_bitrix}</b>\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Адрес:</i> {address}\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Причина отказа:</i> {order.reason_of_refusal}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
-    else:
-        await callback.message.answer(text=f'<b>Зaказ № {order.id_bitrix}</b>\n\n'
-        # f'<b>Клиент:</b>\n'
-        # f'<i>Имя:</i> {name}\n'
-        # f'<i>Телефон: {order.client_phone}</i>\n'
-        # f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Адрес:</i> {address}\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n',
-                                      reply_markup=keyboard,
-                                      parse_mode='html')
+    status_order_text = ''
+    message_text = ''
+    if status_order == rq.OrderStatus.new:
+        status_order_text = '🔔 Новый 🔔'
+    elif status_order == rq.OrderStatus.cancel:
+        status_order_text = '🚫 Отмененный 🚫'
+    elif status_order == rq.OrderStatus.work:
+        status_order_text = '🛠 В работе 🛠'
+    elif status_order == rq.OrderStatus.complete:
+        status_order_text = '✅ Выполненный ✅'
+    elif status_order == rq.OrderStatus.unclaimed:
+        status_order_text = '🔕 Невостребованный 🔕'
+    message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
+                    f'<b>Заявка</b>\n' \
+                    f'<i>Адрес:</i> {address}\n' \
+                    f'<i>Тип работы:</i> {order.task_type_work}\n' \
+                    f'<i>Детали работы:</i> {order.task_detail}\n'
+    if status_order == rq.OrderStatus.cancel:
+        message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+    await callback.message.answer(text=message_text,
+                                  reply_markup=keyboard,
+                                  parse_mode='html')
 
 
 @router.callback_query(F.data.startswith('set_work_'))

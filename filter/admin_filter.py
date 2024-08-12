@@ -1,4 +1,6 @@
 from config_data.config import load_config, Config
+from aiogram.filters import BaseFilter
+from aiogram.types import Message
 import database.requests as rq
 import logging
 
@@ -44,3 +46,7 @@ async def check_personal(tg_id: int, role: str = 'personal') -> bool:
         else:
             return False
 
+
+class IsPersonal(BaseFilter):
+    async def __call__(self, message: Message) -> bool:
+        return await check_personal(tg_id=message.chat.id)
