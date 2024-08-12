@@ -90,7 +90,10 @@ async def get_users_role_not(role: str) -> list[User]:
     """
     logging.info(f'get_users_role_not')
     async with async_session() as session:
-        users = await session.scalars(select(User).where(User.role != role, User.role != UserRole.admin))
+        if role == UserRole.manager:
+            users = await session.scalars(select(User).where(User.is_manager != 1, User.role != UserRole.admin))
+        elif role == UserRole.dispatcher:
+            users = await session.scalars(select(User).where(User.is_dispatcher != 1, User.role != UserRole.admin))
         return users
 
 
@@ -171,7 +174,7 @@ async def add_order(data: dict, id_bitrix: int):
 async def get_orders_status(status: str) -> list[Order]:
     """
     Получаем список заказов с определенным статусом
-    :param status:
+    :param status: [new, complete, cancel, unclaimed]
     :return:
     """
     logging.info(f'get_users_role')
