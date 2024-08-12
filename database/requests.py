@@ -91,7 +91,7 @@ async def get_users_role_not(role: str) -> list[User]:
         return users
 
 
-async def get_user_tg_id(tg_id: int):
+async def get_user_tg_id(tg_id: int) -> User:
     """
     Получаем информацию по пользователю
     :param tg_id:
@@ -115,18 +115,29 @@ async def get_user_token(token: str):
         return user
 
 
-async def set_user_role(tg_id: int, role: str):
+async def set_user_role(tg_id: int, role: str, change_role: str = UserRole.dispatcher):
     """
     Обновляем роль пользователя
     :param tg_id:
     :param role:
+    :param change_role:
     :return:
     """
     logging.info(f'set_user_role: {role}')
     async with async_session() as session:
         user: User = await session.scalar(select(User).where(User.tg_id == tg_id))
         if user:
-            user.role = role
+            if role == UserRole.dispatcher:
+                user.is_dispatcher = 1
+            elif role == UserRole.manager:
+                user.is_manager = 1
+            elif role == 'ban':
+                user.is_manager = 1
+            elif role == UserRole.user:
+                if change_role == UserRole.dispatcher:
+                    user.is_dispatcher = 0
+                elif change_role == UserRole.manager:
+                    user.is_manager = 0
             await session.commit()
 
 
@@ -140,16 +151,18 @@ class OrderStatus:
     close = "close"
 
 
-async def add_order(data: dict):
+async def add_order(data: dict, id_bitrix: int):
     """
     Добавляем новый заказ
     :param data:
+    :param id_bitrix:
     :return:
     """
     logging.info(f'add_order')
     async with async_session() as session:
-        session.add(Order(**data))
-        await session.commit()
+        if not await session.scalar(select(Order).where(Order.id_bitrix == id_bitrix)):
+            session.add(Order(**data))
+            await session.commit()
 
 
 async def get_orders_status(status: str) -> list[Order]:
