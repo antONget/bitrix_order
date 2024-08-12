@@ -183,7 +183,7 @@ async def get_orders_status(status: str) -> list[Order]:
         return orders.all()
 
 
-async def get_order_id(id_order: int):
+async def get_order_id(id_order: int) -> Order:
     """
     Получаем заказ по его id
     :param id_order:

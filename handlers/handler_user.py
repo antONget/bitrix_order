@@ -545,7 +545,7 @@ async def process_add_detail_order(callback: CallbackQuery, state: FSMContext) -
 
 
 @router.message(or_f(F.text, F.photo), StateFilter(UserOrder.add_detail))
-async def get_details_order(message: Message, state: FSMContext):
+async def get_details_order(message: Message, state: FSMContext, bot: Bot):
     """
     Получаем детали к заказу
     :param message:
@@ -562,6 +562,14 @@ async def get_details_order(message: Message, state: FSMContext):
             detail_text = order.order_detail_text
             detail_text += f'{message.text}\n'
             await rq.set_order_detail_text(id_order=id_order, detail_text=detail_text)
+        list_manager = await rq.get_users_role(role=rq.UserRole.manager)
+        for manager in list_manager:
+            try:
+                await bot.send_message(chat_id=manager.tg_id,
+                                       text=f'Мастер @{message.from_user.username} оставил текстовый комментарий'
+                                            f' к заказу № {order.id_bitrix}')
+            except:
+                pass
 
     elif message.photo:
         order = await rq.get_order_id(id_order=id_order)
@@ -572,6 +580,14 @@ async def get_details_order(message: Message, state: FSMContext):
             detail_photo = order.order_detail_photo
             detail_photo += f'{message.photo[-1].file_id}///'
             await rq.set_order_detail_photo(id_order=id_order, detail_photo=detail_photo)
+        list_manager = await rq.get_users_role(role=rq.UserRole.manager)
+        for manager in list_manager:
+            try:
+                await bot.send_message(chat_id=manager.tg_id,
+                                       text=f'Мастер @{message.from_user.username} оставил фотоматериал'
+                                            f' к заказу № {order.id_bitrix}')
+            except:
+                pass
     else:
         await message.answer(text='Можно добавлять только фото и текст')
     await message.answer(text='Добавить еще?',
@@ -658,6 +674,7 @@ async def process_set_order_complete(callback: CallbackQuery, state: FSMContext,
     logging.info(f'process_set_order_complete')
     data = await state.get_data()
     id_order = data['id_order']
+    info_order = await rq.get_order_id(id_order=id_order)
     await callback.message.answer(text=f'Заказ {id_order} помечен как выполненный. Информация передана менеджеру')
     managers = await rq.get_users_role(role=rq.UserRole.manager)
     if managers:
@@ -665,6 +682,6 @@ async def process_set_order_complete(callback: CallbackQuery, state: FSMContext,
             try:
                 await bot.send_message(chat_id=manager.tg_id,
                                        text=f'Пользователь @{callback.from_user.username}'
-                                            f' завершил заказ {id_order}')
+                                            f' завершил заказ {info_order.id_bitrix}')
             except TelegramBadRequest:
                 pass
