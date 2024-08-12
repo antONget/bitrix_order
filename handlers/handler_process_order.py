@@ -241,6 +241,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
             await callback.message.answer(text=message_text,
                                           reply_markup=keyboard,
                                           parse_mode='html')
+    await callback.answer()
 
 
 # <<
@@ -360,6 +361,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
             await callback.message.answer(text=message_text,
                                           reply_markup=keyboard,
                                           parse_mode='html')
+    await callback.answer()
 
 
 @router.callback_query(F.data.startswith('detail_order_'))
