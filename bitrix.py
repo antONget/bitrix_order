@@ -20,7 +20,7 @@ async def get_data_deal(id_deal: int) -> dict | bool | str:
                     "Телефон": {"PHONE": 'None'}}
 
     deal_dict = {"Тип работы": {"UF_CRM_1722889585844": 'None'},
-                 "Детали работы:": {"UF_CRM_1722889647213": 'None'},
+                 "Детали работы:": {"UF_CRM_1722856992199": 'None'},
                  "Саратовская область ": {"UF_CRM_1723096401639": "None"},
                  "Саратов": {"UF_CRM_1722889776466": 'None'},
                  "Энгельс": {"UF_CRM_1722889900952": 'None'},
@@ -32,6 +32,7 @@ async def get_data_deal(id_deal: int) -> dict | bool | str:
     if 'error' in result.keys():
         return "No_deal"
     deal: dict = requests.get(f'{config.tg_bot.bitrix}/crm.deal.get?id={id_deal}').json()['result']
+    print(deal)
     field_deal: dict = requests.get(f'{config.tg_bot.bitrix}/crm.deal.fields?id=30').json()['result']
     result: dict = requests.get(f'{config.tg_bot.bitrix}/crm.contact.get?id={deal["CONTACT_ID"]}').json()
     if 'error' in result.keys():
@@ -52,15 +53,16 @@ async def get_data_deal(id_deal: int) -> dict | bool | str:
         for k, v in order_dict.items():
             temp = list(v.keys())
             if temp[0] == key:
-                if key != 'UF_CRM_1722889647213' and key != 'UF_CRM_1722889043533':
+                if key != 'UF_CRM_1722856992199' and key != 'UF_CRM_1722889043533':
                     for i in field_deal[key]['items']:
                         if i['ID'] == deal[key]:
                             order_dict[k][temp[0]] = i['VALUE']
                 else:
                     order_dict[k][temp[0]] = deal[key]
+    print(order_dict)
     return order_dict
 
 
 if __name__ == '__main__':
     # id_deal = int(input('Пришлите номер заявки: '))
-    asyncio.run(get_data_deal(id_deal=38))
+    asyncio.run(get_data_deal(id_deal=126))
