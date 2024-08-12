@@ -508,7 +508,7 @@ async def process_set_order_work(callback: CallbackQuery) -> None:
                                            f'<i>Детали работы:</i> {order.task_detail}\n'
                                            f'<i>Оплата:</i> {order.task_pay}\n'
                                            f'<i>Начало работ:</i> {order.task_begin}\n\n'
-                                           f'Заказов в работе {count_block}/3',
+                                           f'Заказов в работе {count_block + 1}/3',
                                       parse_mode='html')
     await callback.answer()
 

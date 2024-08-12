@@ -43,7 +43,7 @@ def keyboards_order_item(list_orders: list, block: int, status_order: str):
     kb_builder = InlineKeyboardBuilder()
     buttons = []
     if status_order == 'new':
-        text = f'Взять заказ {block}/{len(list_orders)}'
+        text = f'Взять заказ {block + 1}/{len(list_orders)}'
         button = f'set_work_{list_orders[block].id}'
         buttons.append(InlineKeyboardButton(
             text=text,
