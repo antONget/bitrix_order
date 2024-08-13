@@ -46,12 +46,13 @@ def keyboards_order_item(list_orders: list, block: int, status_order: str):
         buttons.append(InlineKeyboardButton(
             text=text,
             callback_data=button))
-    elif status_order == 'cancel':
+    elif status_order == 'unclaimed':
         text = f'Вернуть заказ'
         button = f'set_new_{list_orders[block].id}'
         buttons.append(InlineKeyboardButton(
             text=text,
             callback_data=button))
+    elif status_order == 'cancel':
         text = f'Закрыть заказ'
         button = f'set_close_{list_orders[block].id}'
         buttons.append(InlineKeyboardButton(
