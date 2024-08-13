@@ -22,8 +22,8 @@ async def main():
     # Конфигурируем логирование
     logging.basicConfig(
         level=logging.INFO,
-        # filename="py_log.log",
-        # filemode='w',
+        filename="py_log.log",
+        filemode='w',
         format='%(filename)s:%(lineno)d #%(levelname)-8s '
                '[%(asctime)s] - %(name)s - %(message)s')
 
@@ -37,7 +37,7 @@ async def main():
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher()
     scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    scheduler.add_job(process_unclaimed_order, 'cron', day="*", hour="10")
+    scheduler.add_job(process_unclaimed_order, 'cron', day="*", hour='*')
     scheduler.start()
     # Регистрируем router в диспетчере
     dp.include_router(handler_edit_list_personal.router)
