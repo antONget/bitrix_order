@@ -10,6 +10,7 @@ config: Config = load_config()
 async def process_unclaimed_order(bot: Bot):
     orders = await rq.get_orders_status(status=rq.OrderStatus.new)
     time_now = datetime.today() - timedelta(hours=12)
+    count_unclaimed_order = 0
     for order in orders:
         date_create_order = order.data_create
         # '%H/%M/%S/%d/%m/%Y'
@@ -20,6 +21,7 @@ async def process_unclaimed_order(bot: Bot):
                           int(date_create_order.split('/')[1]),
                           int(date_create_order.split('/')[2]))
         if time_now > create:
+            count_unclaimed_order += 1
             await rq.set_order_status(id_order=order.id, status=rq.OrderStatus.unclaimed)
             dispatchers = await rq.get_users_role(role=rq.UserRole.dispatcher)
             if dispatchers:
@@ -35,7 +37,12 @@ async def process_unclaimed_order(bot: Bot):
                                            text=f'Заказ № {order.id_bitrix} переведен в статус не востребован')
                 except TelegramBadRequest:
                     pass
-
+    for admin in config.tg_bot.admin_ids.split(','):
+        try:
+            await bot.send_message(chat_id=int(admin),
+                                   text=f'В статус невостребованных переведено {count_unclaimed_order} заказов')
+        except TelegramBadRequest:
+            pass
 
 
 
