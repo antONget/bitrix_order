@@ -9,7 +9,7 @@ config: Config = load_config()
 
 async def process_unclaimed_order(bot: Bot):
     orders = await rq.get_orders_status(status=rq.OrderStatus.new)
-    time_now = datetime.today() - timedelta(hours=12)
+    time_now = datetime.today()
     count_unclaimed_order = 0
     for order in orders:
         date_create_order = order.data_create
@@ -20,7 +20,7 @@ async def process_unclaimed_order(bot: Bot):
                           int(date_create_order.split('/')[0]),
                           int(date_create_order.split('/')[1]),
                           int(date_create_order.split('/')[2]))
-        if time_now > create:
+        if order.status == rq.OrderStatus.new:
             count_unclaimed_order += 1
             await rq.set_order_status(id_order=order.id, status=rq.OrderStatus.unclaimed)
             dispatchers = await rq.get_users_role(role=rq.UserRole.dispatcher)

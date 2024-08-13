@@ -37,7 +37,7 @@ async def main():
     bot = Bot(token=config.tg_bot.token)
     dp = Dispatcher()
     scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
-    scheduler.add_job(process_unclaimed_order, 'cron', day="*", hour='*', args=(bot,))
+    scheduler.add_job(process_unclaimed_order, 'cron', day="*", hour=0, args=(bot,))
     scheduler.start()
     # Регистрируем router в диспетчере
     dp.include_router(handler_edit_list_personal.router)
