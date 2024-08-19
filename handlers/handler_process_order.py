@@ -92,9 +92,9 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
             status_order_text = '🔕 Невостребованный 🔕'
         # 1. Формируем общую часть заказа для всех статусов
         message_text += f'{status_order_text} заказ № <b>{order.id_bitrix}</b>\n' \
-                        f'Дата создания заказа: <b>{order.data_create}<b>\n\n' \
+                        f'Дата создания заказа: <b>{order.data_create}</b>\n\n' \
                         f'<b>Клиент:</b>\n' \
-                        f'Имя: <b>{name}<b>\n' \
+                        f'Имя: <b>{name}</b>\n' \
                         f'Телефон: <code>{order.client_phone}</code>\n\n' \
                         f'<b>Адрес:</b>\n'
 
@@ -185,9 +185,9 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
             status_order_text = '🔕 Невостребованный 🔕'
         # 1. Формируем общую часть заказа для всех статусов
         message_text += f'{status_order_text} заказ № <b>{order.id_bitrix}</b>\n' \
-                        f'Дата создания заказа: <b>{order.data_create}<b>\n\n' \
+                        f'Дата создания заказа: <b>{order.data_create}</b>\n\n' \
                         f'<b>Клиент:</b>\n' \
-                        f'Имя: <b>{name}<b>\n' \
+                        f'Имя: <b>{name}</b>\n' \
                         f'Телефон: <code>{order.client_phone}</code>\n\n' \
                         f'<b>Адрес:</b>\n'
 
@@ -253,9 +253,9 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
             status_order_text = '🔕 Невостребованный 🔕'
         # 1. Формируем общую часть заказа для всех статусов
         message_text += f'{status_order_text} зaказ № <b>{order.id_bitrix}</b>\n' \
-                        f'Дата создания заказа: <b>{order.data_create}<b>\n\n' \
+                        f'Дата создания заказа: <b>{order.data_create}</b>\n\n' \
                         f'<b>Клиент:</b>\n' \
-                        f'Имя: <b>{name}<b>\n' \
+                        f'Имя: <b>{name}</b>\n' \
                         f'Телефон: <code>{order.client_phone}</code>\n\n' \
                         f'<b>Адрес:</b>\n'
 
@@ -345,9 +345,9 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
             status_order_text = '🔕 Невостребованный 🔕'
         # 1. Формируем общую часть заказа для всех статусов
         message_text += f'{status_order_text} заказ № <b>{order.id_bitrix}</b>\n' \
-                        f'Дата создания заказа: <b>{order.data_create}<b>\n\n' \
+                        f'Дата создания заказа: <b>{order.data_create}</b>\n\n' \
                         f'<b>Клиент:</b>\n' \
-                        f'Имя: <b>{name}<b>\n' \
+                        f'Имя: <b>{name}</b>\n' \
                         f'Телефон: <code>{order.client_phone}</code>\n\n' \
                         f'<b>Адрес:</b>\n'
 
@@ -413,9 +413,9 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
             status_order_text = '🔕 Невостребованный 🔕'
         # 1. Формируем общую часть заказа для всех статусов
         message_text += f'{status_order_text} зaказ № <b>{order.id_bitrix}</b>\n' \
-                        f'Дата создания заказа: <b>{order.data_create}<b>\n\n' \
+                        f'Дата создания заказа: <b>{order.data_create}</b>\n\n' \
                         f'<b>Клиент:</b>\n' \
-                        f'Имя: <b>{name}<b>\n' \
+                        f'Имя: <b>{name}</b>\n' \
                         f'Телефон: <code>{order.client_phone}</code>\n\n' \
                         f'<b>Адрес:</b>\n'
 
@@ -563,9 +563,9 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
         status_order_text = '🔕 Невостребованный 🔕'
     # 1. Формируем общую часть заказа для всех статусов
     message_text += f'{status_order_text} заказ № <b>{order.id_bitrix}</b>\n' \
-                    f'Дата создания заказа: <b>{order.data_create}<b>\n\n' \
+                    f'Дата создания заказа: <b>{order.data_create}</b>\n\n' \
                     f'<b>Клиент:</b>\n' \
-                    f'Имя: <b>{name}<b>\n' \
+                    f'Имя: <b>{name}</b>\n' \
                     f'Телефон: <code>{order.client_phone}</code>\n\n' \
                     f'<b>Адрес:</b>\n'
 
@@ -750,9 +750,9 @@ async def search_order_id_bitrix(message: Message, state: FSMContext):
 
         # 1. Формируем общую часть заказа для всех статусов
         message_text += f'{status_order_text} заказ № <b>{order.id_bitrix}</b>\n' \
-                        f'Дата создания заказа: <b>{order.data_create}<b>\n\n' \
+                        f'Дата создания заказа: <b>{order.data_create}</b>\n\n' \
                         f'<b>Клиент:</b>\n' \
-                        f'Имя: <b>{name}<b>\n' \
+                        f'Имя: <b>{name}</b>\n' \
                         f'Телефон: <code>{order.client_phone}</code>\n\n' \
                         f'<b>Адрес:</b>\n'
 
