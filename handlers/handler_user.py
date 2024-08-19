@@ -105,7 +105,7 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
     if order.status != rq.OrderStatus.new:
         message_text += f'<b>Клиент:</b>\n' \
                         f'Имя: <b>{name}</b>\n' \
-                        f'Телефон: <code>{order.client_phone}<code>\n\n'
+                        f'Телефон: <code>{order.client_phone}</code>\n\n'
 
     message_text += f'<b>Адрес:</b>'
     if order.task_saratov != 'None':
@@ -200,7 +200,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
         if order.status != rq.OrderStatus.new:
             message_text += f'<b>Клиент:</b>\n' \
                             f'Имя: <b>{name}</b>\n' \
-                            f'Телефон: <code>{order.client_phone}<code>\n\n'
+                            f'Телефон: <code>{order.client_phone}</code>\n\n'
 
         message_text += f'<b>Адрес:</b>'
         if order.task_saratov != 'None':
@@ -268,7 +268,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
         if order.status != rq.OrderStatus.new:
             message_text += f'<b>Клиент:</b>\n' \
                             f'Имя: <b>{name}</b>\n' \
-                            f'Телефон: <code>{order.client_phone}<code>\n\n'
+                            f'Телефон: <code>{order.client_phone}</code>\n\n'
 
         message_text += f'<b>Адрес:</b>'
         if order.task_saratov != 'None':
@@ -363,7 +363,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
         if order.status != rq.OrderStatus.new:
             message_text += f'<b>Клиент:</b>\n' \
                             f'Имя: <b>{name}</b>\n' \
-                            f'Телефон: <code>{order.client_phone}<code>\n\n'
+                            f'Телефон: <code>{order.client_phone}</code>\n\n'
 
         message_text += f'<b>Адрес:</b>'
         if order.task_saratov != 'None':
@@ -431,7 +431,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
         if order.status != rq.OrderStatus.new:
             message_text += f'<b>Клиент:</b>\n' \
                             f'Имя: <b>{name}</b>\n' \
-                            f'Телефон: <code>{order.client_phone}<code>\n\n'
+                            f'Телефон: <code>{order.client_phone}</code>\n\n'
 
         message_text += f'<b>Адрес:</b>'
         if order.task_saratov != 'None':
@@ -578,7 +578,7 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
     if order.status != rq.OrderStatus.new:
         message_text += f'<b>Клиент:</b>\n' \
                         f'Имя: <b>{name}</b>\n' \
-                        f'Телефон: <code>{order.client_phone}<code>\n\n'
+                        f'Телефон: <code>{order.client_phone}</code>\n\n'
 
     message_text += f'<b>Адрес:</b>'
     if order.task_saratov != 'None':
@@ -941,7 +941,7 @@ async def search_order_id_bitrix(message: Message, state: FSMContext):
         if order.status != rq.OrderStatus.new:
             message_text += f'<b>Клиент:</b>\n' \
                             f'Имя: <b>{name}</b>\n' \
-                            f'Телефон: <code>{order.client_phone}<code>\n\n'
+                            f'Телефон: <code>{order.client_phone}</code>\n\n'
 
         message_text += f'<b>Адрес:</b>'
         if order.task_saratov != 'None':
