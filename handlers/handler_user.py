@@ -21,6 +21,7 @@ config: Config = load_config()
 class UserOrder(StatesGroup):
     reason_of_refusal = State()
     add_detail = State()
+    search_id = State()
 
 
 @router.message(F.text == '💰 Баланс 💰')
@@ -84,19 +85,6 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
     for n in [order.client_second_name, order.client_name, order.client_last_name]:
         if n != 'None':
             name += f'{n} '
-    address = ''
-    if order.task_saratov != 'None':
-        if 'город' not in order.task_saratov:
-            address += f'Саратов, {order.task_saratov}, {order.task_street}'
-        else:
-            address += f'Саратов, {order.task_street}'
-    if order.task_engels != 'None':
-        if 'город' not in order.task_engels:
-            address += f'Энгельс, {order.task_engels}, {order.task_street}'
-        else:
-            address += f'Энгельс, {order.task_street}'
-    if order.task_saratov_area != 'None':
-        address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
     status_order_text = ''
     message_text = ''
     if status_order == rq.OrderStatus.new:
@@ -109,13 +97,53 @@ async def show_merch_slider(callback: CallbackQuery, state: FSMContext):
         status_order_text = '✅ Выполненный ✅'
     elif status_order == rq.OrderStatus.unclaimed:
         status_order_text = '🔕 Невостребованный 🔕'
-    message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
-                    f'<b>Заявка</b>\n' \
-                    f'<i>Адрес:</i> {address}\n' \
+    # 1. Формируем общую часть заказа для всех статусов
+    message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n' \
+                    f'<i>Дата создания заказа: {order.data_create}</i>\n\n'
+
+    # 2. Формируем контактные данные клиента для завершенных заказов
+    if order.status != rq.OrderStatus.new:
+        message_text += f'<b>Клиент:</b>\n' \
+                        f'<i>Имя:</i> {name}\n' \
+                        f'<i>Телефон: {order.client_phone}</i>\n\n'
+
+    message_text += f'<b>Адрес:</b>'
+    if order.task_saratov != 'None':
+        if 'город' not in order.task_saratov:
+            message_text += f'<i>Город:</i> {"Саратов"}\n'
+            if order.task_saratov:
+                message_text += f'<i>Район:</i> {order.task_saratov}\n'
+        else:
+            message_text += f'<i>Город:</i> {"Саратов"}\n'
+    elif order.task_engels != 'None':
+        if 'город' not in order.task_engels:
+            message_text += f'<i>Город:</i> {"Энгельс"}\n'
+            if order.task_engels:
+                message_text += f'<i>Район:</i> {order.task_engels}\n'
+        else:
+            message_text += f'<i>Город:</i> {"Энгельс"}\n'
+    elif order.task_saratov_area != 'None':
+        message_text += f'<i>Саратовская область:</i>\n' \
+                        f'<i>Район:</i> {order.task_saratov_area}\n'
+    if order.task_street:
+        message_text += f'<i>Улица:</i> {order.task_street.split("|")[0]}\n\n'
+    # 3. Формируем информацию о задаче
+    message_text += f'<b>Заявка</b>\n' \
                     f'<i>Тип работы:</i> {order.task_type_work}\n' \
-                    f'<i>Детали работы:</i> {order.task_detail}\n'
-    if status_order == rq.OrderStatus.cancel:
+                    f'<i>Детали работы:</i> {order.task_detail}\n\n'
+
+    # 4. Формируем информацию о заявках в работе выполненных и отменных
+    if order.status in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:
+        message_text += f'<i>Мастер:</i> @{(await rq.get_user_tg_id(order.tg_executor)).username}/' \
+                        f'tg_id{order.tg_executor}\n'
+
+    # 5. Формируем причину отказа
+    if order.status == rq.OrderStatus.cancel:
         message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+    # 5. Формируем стоимость заказа
+    elif order.status == rq.OrderStatus.complete:
+        message_text += f'<i>Дата завершения заказа:</i> {order.data_complete}\n' \
+                        f'<i>Стоимость заказа:</i> {order.amount}'
     await callback.message.answer(text=message_text,
                                   reply_markup=keyboard,
                                   parse_mode='html')
@@ -152,19 +180,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
         for n in [order.client_second_name, order.client_name, order.client_last_name]:
             if n != 'None':
                 name += f'{n} '
-        address = ''
-        if order.task_saratov != 'None':
-            if 'город' not in order.task_saratov:
-                address += f'Саратов, {order.task_saratov}, {order.task_street}'
-            else:
-                address += f'Саратов, {order.task_street}'
-        if order.task_engels != 'None':
-            if 'город' not in order.task_engels:
-                address += f'Энгельс, {order.task_engels}, {order.task_street}'
-            else:
-                address += f'Энгельс, {order.task_street}'
-        if order.task_saratov_area != 'None':
-            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
+
         status_order_text = ''
         message_text = ''
         if status_order == rq.OrderStatus.new:
@@ -177,13 +193,53 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
             status_order_text = '✅ Выполненный ✅'
         elif status_order == rq.OrderStatus.unclaimed:
             status_order_text = '🔕 Невостребованный 🔕'
-        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
-                        f'<b>Заявка</b>\n' \
-                        f'<i>Адрес:</i> {address}\n' \
+        # 1. Формируем общую часть заказа для всех статусов
+        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n' \
+                        f'<i>Дата создания заказа: {order.data_create}</i>\n\n' \
+
+        # 2. Формируем контактные данные клиента для завершенных заказов
+        if order.status != rq.OrderStatus.new:
+            message_text += f'<b>Клиент:</b>\n' \
+                            f'<i>Имя:</i> {name}\n' \
+                            f'<i>Телефон: {order.client_phone}</i>\n\n'
+
+        message_text += f'<b>Адрес:</b>'
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+                if order.task_saratov:
+                    message_text += f'<i>Район:</i> {order.task_saratov}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+        elif order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+                if order.task_engels:
+                    message_text += f'<i>Район:</i> {order.task_engels}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+        elif order.task_saratov_area != 'None':
+            message_text += f'<i>Саратовская область:</i>\n' \
+                            f'<i>Район:</i> {order.task_saratov_area}\n'
+        if order.task_street:
+            message_text += f'<i>Улица:</i> {order.task_street.split("|")[0]}\n\n'
+        # 3. Формируем информацию о задаче
+        message_text += f'<b>Заявка</b>\n' \
                         f'<i>Тип работы:</i> {order.task_type_work}\n' \
-                        f'<i>Детали работы:</i> {order.task_detail}\n'
-        if status_order == rq.OrderStatus.cancel:
+                        f'<i>Детали работы:</i> {order.task_detail}\n\n'
+
+        # 4. Формируем информацию о заявках в работе выполненных и отменных
+        if order.status in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:
+            message_text += f'<i>Мастер:</i> @{(await rq.get_user_tg_id(order.tg_executor)).username}/' \
+                            f'tg_id{order.tg_executor}\n'
+
+        # 5. Формируем причину отказа
+        if order.status == rq.OrderStatus.cancel:
             message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        # 5. Формируем стоимость заказа
+        elif order.status == rq.OrderStatus.complete:
+            message_text += f'<i>Дата завершения заказа:</i> {order.data_complete}\n' \
+                            f'<i>Стоимость заказа:</i> {order.amount}'
         await callback.message.answer(text=message_text,
                                       reply_markup=keyboard,
                                       parse_mode='html')
@@ -193,17 +249,7 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
         for n in [order.client_second_name, order.client_name, order.client_last_name]:
             if n != 'None':
                 name += f'{n} '
-        address = ''
-        if order.task_saratov != 'None':
-            if 'город' not in order.task_saratov:
-                address += f'Саратов, {order.task_saratov}, {order.task_street}'
-            else:
-                address += f'Саратов, {order.task_street}'
-        if order.task_engels != 'None':
-            if 'город' not in order.task_engels:
-                address += f'Энгельс, {order.task_engels}, {order.task_street}'
-            else:
-                address += f'Энгельс, {order.task_street}'
+
         status_order_text = ''
         message_text = ''
         if status_order == rq.OrderStatus.new:
@@ -216,13 +262,53 @@ async def process_forward(callback: CallbackQuery, state: FSMContext):
             status_order_text = '✅ Выполненный ✅'
         elif status_order == rq.OrderStatus.unclaimed:
             status_order_text = '🔕 Невостребованный 🔕'
-        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
-                        f'<b>Зaявка</b>\n' \
-                        f'<i>Адрес:</i> {address}\n' \
+        # 1. Формируем общую часть заказа для всех статусов
+        message_text += f'<b>{status_order_text} зaкaз № {order.id_bitrix}</b>\n' \
+                        f'<i>Дата создания заказа: {order.data_create}</i>\n\n' \
+
+        # 2. Формируем контактные данные клиента для завершенных заказов
+        if order.status != rq.OrderStatus.new:
+            message_text += f'<b>Клиент:</b>\n' \
+                            f'<i>Имя:</i> {name}\n' \
+                            f'<i>Телефон: {order.client_phone}</i>\n\n'
+
+        message_text += f'<b>Адрес:</b>'
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+                if order.task_saratov:
+                    message_text += f'<i>Район:</i> {order.task_saratov}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+        elif order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+                if order.task_engels:
+                    message_text += f'<i>Район:</i> {order.task_engels}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+        elif order.task_saratov_area != 'None':
+            message_text += f'<i>Саратовская область:</i>\n' \
+                            f'<i>Район:</i> {order.task_saratov_area}\n'
+        if order.task_street:
+            message_text += f'<i>Улица:</i> {order.task_street.split("|")[0]}\n\n'
+        # 3. Формируем информацию о задаче
+        message_text += f'<b>Заявка</b>\n' \
                         f'<i>Тип работы:</i> {order.task_type_work}\n' \
-                        f'<i>Детали работы:</i> {order.task_detail}\n'
-        if status_order == rq.OrderStatus.cancel:
+                        f'<i>Детали работы:</i> {order.task_detail}\n\n'
+
+        # 4. Формируем информацию о заявках в работе выполненных и отменных
+        if order.status in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:
+            message_text += f'<i>Мастер:</i> @{(await rq.get_user_tg_id(order.tg_executor)).username}/' \
+                            f'tg_id{order.tg_executor}\n'
+
+        # 5. Формируем причину отказа
+        if order.status == rq.OrderStatus.cancel:
             message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        # 5. Формируем стоимость заказа
+        elif order.status == rq.OrderStatus.complete:
+            message_text += f'<i>Дата завершения заказа:</i> {order.data_complete}\n' \
+                            f'<i>Стоимость заказа:</i> {order.amount}'
         await callback.message.answer(text=message_text,
                                       reply_markup=keyboard,
                                       parse_mode='html')
@@ -259,17 +345,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
         for n in [order.client_second_name, order.client_name, order.client_last_name]:
             if n != 'None':
                 name += f'{n} '
-        address = ''
-        if order.task_saratov != 'None':
-            if 'город' not in order.task_saratov:
-                address += f'Саратов, {order.task_saratov}, {order.task_street}'
-            else:
-                address += f'Саратов, {order.task_street}'
-        if order.task_engels != 'None':
-            if 'город' not in order.task_engels:
-                address += f'Энгельс, {order.task_engels}, {order.task_street}'
-            else:
-                address += f'Энгельс, {order.task_street}'
+
         status_order_text = ''
         message_text = ''
         if status_order == rq.OrderStatus.new:
@@ -282,13 +358,53 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
             status_order_text = '✅ Выполненный ✅'
         elif status_order == rq.OrderStatus.unclaimed:
             status_order_text = '🔕 Невостребованный 🔕'
-        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
-                        f'<b>Заявка</b>\n' \
-                        f'<i>Адрес:</i> {address}\n' \
+        # 1. Формируем общую часть заказа для всех статусов
+        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n' \
+                        f'<i>Дата создания заказа: {order.data_create}</i>\n\n' \
+
+        # 2. Формируем контактные данные клиента для завершенных заказов
+        if order.status != rq.OrderStatus.new:
+            message_text += f'<b>Клиент:</b>\n' \
+                            f'<i>Имя:</i> {name}\n' \
+                            f'<i>Телефон: {order.client_phone}</i>\n\n'
+
+        message_text += f'<b>Адрес:</b>'
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+                if order.task_saratov:
+                    message_text += f'<i>Район:</i> {order.task_saratov}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+        elif order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+                if order.task_engels:
+                    message_text += f'<i>Район:</i> {order.task_engels}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+        elif order.task_saratov_area != 'None':
+            message_text += f'<i>Саратовская область:</i>\n' \
+                            f'<i>Район:</i> {order.task_saratov_area}\n'
+        if order.task_street:
+            message_text += f'<i>Улица:</i> {order.task_street.split("|")[0]}\n\n'
+        # 3. Формируем информацию о задаче
+        message_text += f'<b>Заявка</b>\n' \
                         f'<i>Тип работы:</i> {order.task_type_work}\n' \
-                        f'<i>Детали работы:</i> {order.task_detail}\n'
-        if status_order == rq.OrderStatus.cancel:
+                        f'<i>Детали работы:</i> {order.task_detail}\n\n'
+
+        # 4. Формируем информацию о заявках в работе выполненных и отменных
+        if order.status in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:
+            message_text += f'<i>Мастер:</i> @{(await rq.get_user_tg_id(order.tg_executor)).username}/' \
+                            f'tg_id{order.tg_executor}\n'
+
+        # 5. Формируем причину отказа
+        if order.status == rq.OrderStatus.cancel:
             message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        # 5. Формируем стоимость заказа
+        elif order.status == rq.OrderStatus.complete:
+            message_text += f'<i>Дата завершения заказа:</i> {order.data_complete}\n' \
+                            f'<i>Стоимость заказа:</i> {order.amount}'
         await callback.message.answer(text=message_text,
                                       reply_markup=keyboard,
                                       parse_mode='html')
@@ -298,19 +414,7 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
         for n in [order.client_second_name, order.client_name, order.client_last_name]:
             if n != 'None':
                 name += f'{n} '
-        address = ''
-        if order.task_saratov != 'None':
-            if 'город' not in order.task_saratov:
-                address += f'Саратов, {order.task_saratov}, {order.task_street}'
-            else:
-                address += f'Саратов, {order.task_street}'
-        if order.task_engels != 'None':
-            if 'город' not in order.task_engels:
-                address += f'Энгельс, {order.task_engels}, {order.task_street}'
-            else:
-                address += f'Энгельс, {order.task_street}'
-        if order.task_saratov_area != 'None':
-            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
+
         status_order_text = ''
         message_text = ''
         if status_order == rq.OrderStatus.new:
@@ -323,13 +427,53 @@ async def process_back(callback: CallbackQuery, state: FSMContext) -> None:
             status_order_text = '✅ Выполненный ✅'
         elif status_order == rq.OrderStatus.unclaimed:
             status_order_text = '🔕 Невостребованный 🔕'
-        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
-                        f'<b>Зaявка</b>\n' \
-                        f'<i>Адрес:</i> {address}\n' \
+        # 1. Формируем общую часть заказа для всех статусов
+        message_text += f'<b>{status_order_text} зaкaз № {order.id_bitrix}</b>\n' \
+                        f'<i>Дата создания заказа: {order.data_create}</i>\n\n' \
+
+        # 2. Формируем контактные данные клиента для завершенных заказов
+        if order.status != rq.OrderStatus.new:
+            message_text += f'<b>Клиент:</b>\n' \
+                            f'<i>Имя:</i> {name}\n' \
+                            f'<i>Телефон: {order.client_phone}</i>\n\n'
+
+        message_text += f'<b>Адрес:</b>'
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+                if order.task_saratov:
+                    message_text += f'<i>Район:</i> {order.task_saratov}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+        elif order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+                if order.task_engels:
+                    message_text += f'<i>Район:</i> {order.task_engels}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+        elif order.task_saratov_area != 'None':
+            message_text += f'<i>Саратовская область:</i>\n' \
+                            f'<i>Район:</i> {order.task_saratov_area}\n'
+        if order.task_street:
+            message_text += f'<i>Улица:</i> {order.task_street.split("|")[0]}\n\n'
+        # 3. Формируем информацию о задаче
+        message_text += f'<b>Заявка</b>\n' \
                         f'<i>Тип работы:</i> {order.task_type_work}\n' \
-                        f'<i>Детали работы:</i> {order.task_detail}\n'
-        if status_order == rq.OrderStatus.cancel:
+                        f'<i>Детали работы:</i> {order.task_detail}\n\n'
+
+        # 4. Формируем информацию о заявках в работе выполненных и отменных
+        if order.status in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:
+            message_text += f'<i>Мастер:</i> @{(await rq.get_user_tg_id(order.tg_executor)).username}/' \
+                            f'tg_id{order.tg_executor}\n'
+
+        # 5. Формируем причину отказа
+        if order.status == rq.OrderStatus.cancel:
             message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        # 5. Формируем стоимость заказа
+        elif order.status == rq.OrderStatus.complete:
+            message_text += f'<i>Дата завершения заказа:</i> {order.data_complete}\n' \
+                            f'<i>Стоимость заказа:</i> {order.amount}'
         await callback.message.answer(text=message_text,
                                       reply_markup=keyboard,
                                       parse_mode='html')
@@ -349,7 +493,7 @@ async def show_detail_info_order(callback: CallbackQuery) -> None:
     detail_text = order.order_detail_text
     detail_photo = order.order_detail_photo
     if detail_photo == 'None' and detail_text == 'None':
-        await callback.message.edit_text(text=f'<b>Заказ: {id_order}</b>\n\n'
+        await callback.message.edit_text(text=f'<b>Заказ № {id_order}</b>\n\n'
                                               f'Дополнительные материалы не добавлены в базу данных',
                                          reply_markup=kb.keyboard_back_item(),
                                          parse_mode='html')
@@ -392,7 +536,7 @@ async def show_detail_info_order(callback: CallbackQuery) -> None:
     await callback.answer()
 
 
-@router.callback_query(F.data == 'back_order')
+@router.callback_query(F.data == 'back_order_user')
 async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> None:
     """
     Возврат к списку заказов из раздела ПОДРОБНЕЕ
@@ -417,19 +561,7 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
     for n in [order.client_second_name, order.client_name, order.client_last_name]:
         if n != 'None':
             name += f'{n} '
-    address = ''
-    if order.task_saratov != 'None':
-        if 'город' not in order.task_saratov:
-            address += f'Саратов, {order.task_saratov}, {order.task_street}'
-        else:
-            address += f'Саратов, {order.task_street}'
-    if order.task_engels != 'None':
-        if 'город' not in order.task_engels:
-            address += f'Энгельс, {order.task_engels}, {order.task_street}'
-        else:
-            address += f'Энгельс, {order.task_street}'
-    if order.task_saratov_area != 'None':
-        address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
+
     status_order_text = ''
     message_text = ''
     if status_order == rq.OrderStatus.new:
@@ -442,13 +574,53 @@ async def show_detail_info_order(callback: CallbackQuery, state: FSMContext) -> 
         status_order_text = '✅ Выполненный ✅'
     elif status_order == rq.OrderStatus.unclaimed:
         status_order_text = '🔕 Невостребованный 🔕'
-    message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n\n' \
-                    f'<b>Заявка</b>\n' \
-                    f'<i>Адрес:</i> {address}\n' \
+    # 1. Формируем общую часть заказа для всех статусов
+    message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n' \
+                    f'<i>Дата создания заказа: {order.data_create}</i>\n\n'
+
+    # 2. Формируем контактные данные клиента для завершенных заказов
+    if order.status != rq.OrderStatus.new:
+        message_text += f'<b>Клиент:</b>\n' \
+                        f'<i>Имя:</i> {name}\n' \
+                        f'<i>Телефон: {order.client_phone}</i>\n\n'
+
+    message_text += f'<b>Адрес:</b>'
+    if order.task_saratov != 'None':
+        if 'город' not in order.task_saratov:
+            message_text += f'<i>Город:</i> {"Саратов"}\n'
+            if order.task_saratov:
+                message_text += f'<i>Район:</i> {order.task_saratov}\n'
+        else:
+            message_text += f'<i>Город:</i> {"Саратов"}\n'
+    elif order.task_engels != 'None':
+        if 'город' not in order.task_engels:
+            message_text += f'<i>Город:</i> {"Энгельс"}\n'
+            if order.task_engels:
+                message_text += f'<i>Район:</i> {order.task_engels}\n'
+        else:
+            message_text += f'<i>Город:</i> {"Энгельс"}\n'
+    elif order.task_saratov_area != 'None':
+        message_text += f'<i>Саратовская область:</i>\n' \
+                        f'<i>Район:</i> {order.task_saratov_area}\n'
+    if order.task_street:
+        message_text += f'<i>Улица:</i> {order.task_street.split("|")[0]}\n\n'
+    # 3. Формируем информацию о задаче
+    message_text += f'<b>Заявка</b>\n' \
                     f'<i>Тип работы:</i> {order.task_type_work}\n' \
-                    f'<i>Детали работы:</i> {order.task_detail}\n'
-    if status_order == rq.OrderStatus.cancel:
+                    f'<i>Детали работы:</i> {order.task_detail}\n\n'
+
+    # 4. Формируем информацию о заявках в работе выполненных и отменных
+    if order.status in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:
+        message_text += f'<i>Мастер:</i> @{(await rq.get_user_tg_id(order.tg_executor)).username}/' \
+                        f'tg_id{order.tg_executor}\n'
+
+    # 5. Формируем причину отказа
+    if order.status == rq.OrderStatus.cancel:
         message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+    # 5. Формируем стоимость заказа
+    elif order.status == rq.OrderStatus.complete:
+        message_text += f'<i>Дата завершения заказа:</i> {order.data_complete}\n' \
+                        f'<i>Стоимость заказа:</i> {order.amount}'
     await callback.message.answer(text=message_text,
                                   reply_markup=keyboard,
                                   parse_mode='html')
@@ -716,3 +888,117 @@ async def process_set_order_complete(callback: CallbackQuery, state: FSMContext,
         except:
             pass
     await callback.answer()
+
+
+@router.callback_query(F.data == 'user_order_find')
+async def process_set_order_close(callback: CallbackQuery, state: FSMContext) -> None:
+    """
+    Запрос номер
+    :param callback:
+    :param state:
+    :return:
+    """
+    await callback.message.answer(text=f'🔎 Пришлите ID заказа:')
+    await state.set_state(UserOrder.search_id)
+    await callback.answer()
+
+
+@router.message(F.text, StateFilter(UserOrder.search_id))
+async def search_order_id_bitrix(message: Message, state: FSMContext):
+    """
+    Поиск заказа по его ID в системе bitrix
+    :param message:
+    :param state:
+    :return:
+    """
+    try:
+        bitrix_id = int(message.text)
+    except ValueError:
+        await message.answer(text='ID заказа должно быть целым числом!')
+        await state.set_state(default_state)
+        return
+    order = await rq.get_order_bitrix_id(bitrix_id=bitrix_id)
+    if order:
+
+        name = ''
+        for n in [order.client_second_name, order.client_name, order.client_last_name]:
+            if n != 'None':
+                name += f'{n} '
+        # Формируем карточку заказа
+        message_text = ''
+        status_order_text = ''
+        if order.status == rq.OrderStatus.new:
+            status_order_text = '🔔 Новый 🔔'
+        elif order.status == rq.OrderStatus.cancel:
+            status_order_text = '🚫 Отмененный 🚫'
+        elif order.status == rq.OrderStatus.work:
+            status_order_text = '🛠 В работе 🛠'
+        elif order.status == rq.OrderStatus.complete:
+            status_order_text = '✅ Выполненный ✅'
+        elif order.status == rq.OrderStatus.unclaimed:
+            status_order_text = '🔕 Невостребованный 🔕'
+
+        # 1. Формируем общую часть заказа для всех статусов
+        message_text += f'<b>{status_order_text} заказ № {order.id_bitrix}</b>\n' \
+                        f'<i>Дата создания заказа: {order.data_create}</i>\n\n' \
+
+        # 2. Формируем контактные данные клиента для завершенных заказов
+        if order.status != rq.OrderStatus.new:
+            message_text += f'<b>Клиент:</b>\n' \
+                            f'<i>Имя:</i> {name}\n' \
+                            f'<i>Телефон: {order.client_phone}</i>\n\n'
+
+        message_text += f'<b>Адрес:</b>'
+        if order.task_saratov != 'None':
+            if 'город' not in order.task_saratov:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+                if order.task_saratov:
+                    message_text += f'<i>Район:</i> {order.task_saratov}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Саратов"}\n'
+        elif order.task_engels != 'None':
+            if 'город' not in order.task_engels:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+                if order.task_engels:
+                    message_text += f'<i>Район:</i> {order.task_engels}\n'
+            else:
+                message_text += f'<i>Город:</i> {"Энгельс"}\n'
+        elif order.task_saratov_area != 'None':
+            message_text += f'<i>Саратовская область:</i>\n' \
+                            f'<i>Район:</i> {order.task_saratov_area}\n'
+        if order.task_street:
+            message_text += f'<i>Улица:</i> {order.task_street.split("|")[0]}\n\n'
+        # 3. Формируем информацию о задаче
+        message_text += f'<b>Заявка</b>\n' \
+                        f'<i>Тип работы:</i> {order.task_type_work}\n' \
+                        f'<i>Детали работы:</i> {order.task_detail}\n\n'
+
+        # 4. Формируем информацию о заявках в работе выполненных и отменных
+        if order.status in [rq.OrderStatus.work, rq.OrderStatus.complete, rq.OrderStatus.cancel]:
+            message_text += f'<i>Мастер:</i> @{(await rq.get_user_tg_id(order.tg_executor)).username}/' \
+                            f'tg_id{order.tg_executor}\n'
+
+        # 5. Формируем причину отказа
+        if order.status == rq.OrderStatus.cancel:
+            message_text += f'<i>Причина отказа:</i> {order.reason_of_refusal}\n'
+        # 5. Формируем стоимость заказа
+        elif order.status == rq.OrderStatus.complete:
+            message_text += f'<i>Дата завершения заказа:</i> {order.data_complete}\n' \
+                            f'<i>Стоимость заказа:</i> {order.amount}'
+
+        models_orders = await rq.get_orders_status(status=order.status)
+        list_orders = []
+        i = -1
+        for order in models_orders:
+            i += 1
+            list_orders.append(order)
+            if bitrix_id == order.id_bitrix:
+                block = i
+        await state.update_data(status_order=order.status)
+        keyboard = kb.keyboards_order_item(list_orders=list_orders, block=block, status_order=order.status)
+        await message.answer(text=message_text,
+                             reply_markup=keyboard,
+                             parse_mode='html')
+    else:
+        await message.answer(text=f'Заказ не найден!')
+    await state.set_state(default_state)

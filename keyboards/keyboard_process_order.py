@@ -23,7 +23,7 @@ async def keyboard_select_status_order() -> InlineKeyboardMarkup:
         callback_data='order_status_cancel')
     button_6 = InlineKeyboardButton(
         text=f'🔎 Поиск заказа 🔍',
-        callback_data='user_order_find')
+        callback_data='order_find')
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[button_1], [button_2], [button_3], [button_4], [button_5],
                                                      [button_6]])
     return keyboard
