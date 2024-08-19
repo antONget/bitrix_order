@@ -653,26 +653,33 @@ async def process_set_order_work(callback: CallbackQuery) -> None:
         address = ''
         if order.task_saratov != 'None':
             if 'город' not in order.task_saratov:
-                address += f'Саратов, {order.task_saratov}, {order.task_street}'
+                address += f'Город: <b>{"Саратов"}</b>\n'
+                if order.task_saratov:
+                    address += f'Район: <b>{order.task_saratov}</b>\n'
             else:
-                address += f'Саратов, {order.task_street}'
-        if order.task_engels != 'None':
+                address += f'Город: <b>{"Саратов"}</b>\n'
+        elif order.task_engels != 'None':
             if 'город' not in order.task_engels:
-                address += f'Энгельс, {order.task_engels}, {order.task_street}'
+                address += f'Город: <b>{"Энгельс"}</b>\n'
+                if order.task_engels:
+                    address += f'Район: <b>{order.task_engels}</b>\n'
             else:
-                address += f'Энгельс, {order.task_street}'
-        if order.task_saratov_area != 'None':
-            address += f'Саратовская область, {order.task_saratov_area}, {order.task_street}'
+                address += f'Город: <b>{"Энгельс"}</b>\n'
+        elif order.task_saratov_area != 'None':
+            address += f'Саратовская область:\n' \
+                       f'Район: <b>{order.task_saratov_area}</b>\n'
+        if order.task_street:
+            address += f'Улица: <b>{order.task_street.split("|")[0]}</b>\n\n'
         await callback.message.answer(text=f'<b>Вы взяли в работу заказ № {order.id_bitrix}</b>\n\n'
                                            f'<b>Клиент:</b>\n'
-                                           f'<i>Имя:</i> {name}\n'
-                                           f'<i>Телефон: {order.client_phone}</i>\n'
-                                           f'<i>Адрес:</i> {address}\n\n'
-                                           f'<b>Заявка</b>\n'
-                                           f'<i>Тип работы:</i> {order.task_type_work}\n'
-                                           f'<i>Детали работы:</i> {order.task_detail}\n'
-                                           f'<i>Оплата:</i> {order.task_pay}\n'
-                                           f'<i>Начало работ:</i> {order.task_begin}\n\n'
+                                           f'Имя: <b>{name}<b>\n'
+                                           f'Телефон: <code>{order.client_phone}</code>\n'
+                                           f'Адрес:\n'
+                                           f'{address}\n'
+                                           f'Тип работы: <b>{order.task_type_work}</b>\n'
+                                           f'Детали работы: <b>{order.task_detail}</b>\n'
+                                           f'Оплата: <b>{order.task_pay}</b>\n'
+                                           f'Начало работ: <b>{order.task_begin}</b>\n\n'
                                            f'Заказов в работе {count_block + 1}/3',
                                       parse_mode='html')
     await callback.answer()
