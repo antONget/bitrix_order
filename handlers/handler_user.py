@@ -672,7 +672,7 @@ async def process_set_order_work(callback: CallbackQuery) -> None:
             address += f'Улица: <b>{order.task_street.split("|")[0]}</b>\n\n'
         await callback.message.answer(text=f'<b>Вы взяли в работу заказ № {order.id_bitrix}</b>\n\n'
                                            f'<b>Клиент:</b>\n'
-                                           f'Имя: <b>{name}<b>\n'
+                                           f'Имя: <b>{name}</b>\n'
                                            f'Телефон: <code>{order.client_phone}</code>\n'
                                            f'Адрес:\n'
                                            f'{address}\n'
