@@ -71,7 +71,11 @@ async def get_token(message: Message, bot: Bot, state: FSMContext):
     """
     user = await rq.get_user_token(token=message.text)
     if user and not user.tg_id:
-        data = {"token": message.text, "tg_id": message.chat.id, "username": message.from_user.username}
+        if message.from_user.username:
+            username = message.from_user.username
+        else:
+            username = 'None'
+        data = {"token": message.text, "tg_id": message.chat.id, "username": username}
         await rq.set_add_user(data=data)
         await message.answer(text=f'Я бот MasterClass. Рад с вами работать. 👋',
                              reply_markup=kb.keyboards_main_user())

@@ -13,7 +13,7 @@ def check_super_admin(telegram_id: int) -> bool:
     :param telegram_id: id пользователя телеграм
     :return: true если пользователь администратор, false в противном случае
     """
-    logging.info('cheсk_manager')
+    logging.info('check_super_admin')
     list_super_admin = config.tg_bot.admin_ids.split(',')
     return str(telegram_id) in list_super_admin
 
